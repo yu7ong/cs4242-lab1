@@ -28,20 +28,36 @@ def make_gabor_bank(config: GaborConfig) -> list[tuple[np.ndarray, dict]]:
     #   - Rotate the x coordinate into the current orientation.
     #   - Multiply a Gaussian envelope by a sine carrier with the current frequency and phase.
     #   - Remember to add the phase in the metadata.
+    bank: list[tuple[np.ndarray, dict]] = []
     for freq in config.frequencies:
         for orient in config.orientations:
             x_rot = x * np.cos(orient) + y * np.sin(orient)
             for phase in config.phases:
                 kernel = np.exp(-0.5 * (x**2 + y**2) / (config.sigma**2)) * np.sin(2 * np.pi * freq * x_rot + phase)
-    # TODO 4 — Normalise and validate each kernel
-    #   - Subtract the kernel mean so constant images have little response.
-    #   - Divide by its Euclidean norm and reject a near-zero/degenerate norm.
-    #   - Store the final kernel as float32.
-    #
-    # TODO 5 — Attach metadata and return
-    #   - Include frequency, orientation, phase, and asdict(config) for each item.
-    #   - Return a list of (kernel, metadata) tuples in the loop order above.
-    raise NotImplementedError
+
+                # TODO 4 — Normalise and validate each kernel
+                #   - Subtract the kernel mean so constant images have little response.
+                #   - Divide by its Euclidean norm and reject a near-zero/degenerate norm.
+                #   - Store the final kernel as float32.
+                kernel = kernel - kernel.mean()
+                norm = np.linalg.norm(kernel)
+                if not np.isfinite(norm) or norm < 1e-8:
+                    raise ValueError(
+                        f"degenerate Gabor kernel (freq={freq}, orient={orient}, phase={phase}): norm={norm}"
+                    )
+                kernel = (kernel / norm).astype(np.float32)
+
+                # TODO 5 — Attach metadata and return
+                #   - Include frequency, orientation, phase, and asdict(config) for each item.
+                #   - Return a list of (kernel, metadata) tuples in the loop order above.
+                metadata = {
+                    "frequency": freq,
+                    "orientation": orient,
+                    "phase": phase,
+                    "config": asdict(config),
+                }
+                bank.append((kernel, metadata))
+    return bank
 
 
 def gabor_energy_maps(gray: np.ndarray, bank: list[tuple[np.ndarray, dict]], pool_size: int = 9,
@@ -65,3 +81,10 @@ def gabor_energy_maps(gray: np.ndarray, bank: list[tuple[np.ndarray, dict]], poo
     # TODO 4 — Check numerical validity
     #   - Raise FloatingPointError if any returned value is NaN or infinite.
     raise NotImplementedError
+
+if __name__ == "__main__":
+    # Quick sanity check of the Gabor bank generation
+    config = GaborConfig()
+    bank = make_gabor_bank(config)
+    print(f"Generated {len(bank)} Gabor kernels with shape {bank[0][0].shape} and dtype {bank[0][0].dtype}")
+    print(bank[0][1])  # Print metadata for the first kernel
