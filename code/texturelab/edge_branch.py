@@ -29,20 +29,36 @@ def bilinear_sample(image: np.ndarray, y: np.ndarray, x: np.ndarray) -> np.ndarr
 
 def nms_interpolated(magnitude: np.ndarray, direction: np.ndarray) -> np.ndarray:
     """Thin gradient magnitude along the exact image-coordinate direction."""
-    # YOUR CODE HERE
-    #
     # TODO 1 — Validate inputs
     #   - Require matching two-dimensional magnitude and direction arrays.
-    #
+    if magnitude.shape != direction.shape or magnitude.ndim != 2:
+        raise ValueError("magnitude and direction must be matching 2-D arrays")
+
     # TODO 2 — Construct exact-direction comparison coordinates
     #   - Build row/column index grids for the complete image.
     #   - In image coordinates, the unit step is dy=sin(theta), dx=cos(theta).
     #   - Bilinearly sample magnitude one step forward and one step backward.
-    #
+    h, w = magnitude.shape
+    ys, xs = np.mgrid[0:h, 0:w].astype(np.float64)
+
+    dy = np.sin(direction)
+    dx = np.cos(direction)
+
+    mag_fwd = bilinear_sample(magnitude, ys + dy, xs + dx)
+    mag_bwd = bilinear_sample(magnitude, ys - dy, xs - dx)
+
     # TODO 3 — Suppress non-maxima
     #   - Keep the original magnitude when it is >= both interpolated neighbours.
     #   - Write zero elsewhere, return float32, and explicitly zero all four borders.
-    raise NotImplementedError
+    keep = (magnitude >= mag_fwd) & (magnitude >= mag_bwd)
+    result = np.where(keep, magnitude, 0.0).astype(np.float32)
+
+    result[0, :] = 0
+    result[-1, :] = 0
+    result[:, 0] = 0
+    result[:, -1] = 0
+
+    return result
 
 
 def adaptive_thresholds(nms: np.ndarray, config: EdgeConfig) -> tuple[float, float]:
