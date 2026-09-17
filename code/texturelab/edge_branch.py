@@ -15,16 +15,30 @@ def bilinear_sample(image: np.ndarray, y: np.ndarray, x: np.ndarray) -> np.ndarr
     #   - Read image height/width and clamp y/x to the valid closed intervals.
     #   - Compute floor coordinates (y0, x0) and the next coordinates (y1, x1).
     #   - Clamp y1/x1 as well so samples at the last row/column remain valid.
-    #
+    H, W = image.shape
+    y = np.clip(y, 0, H - 1)
+    x = np.clip(x, 0, W - 1)
+    y0 = np.floor(y).astype(int)
+    x0 = np.floor(x).astype(int)
+    y1 = np.clip(y0 + 1, 0, H - 1)
+    x1 = np.clip(x0 + 1, 0, W - 1)
     # TODO 2 — Compute interpolation weights
     #   - wy and wx are the fractional offsets from (y0, x0).
     #   - Form the four complementary weights for top-left, top-right,
     #     bottom-left, and bottom-right pixels.
-    #
+    wy = y - y0 
+    wx = x - x0
+    top_left     = image[y0, x0]
+    top_right    = image[y0, x1]
+    bottom_left  = image[y1, x0]
+    bottom_right = image[y1, x1]
     # TODO 3 — Return the weighted sample
     #   - Support array-valued y/x so a whole image grid can be sampled at once.
     #   - An exact integer coordinate should reproduce the corresponding pixel.
-    raise NotImplementedError
+    top    = top_left * (1 - wx) + top_right * wx
+    bottom = bottom_left * (1 - wx) + bottom_right * wx
+    result = top * (1 - wy) + bottom * wy
+    return result
 
 
 def nms_interpolated(magnitude: np.ndarray, direction: np.ndarray) -> np.ndarray:
