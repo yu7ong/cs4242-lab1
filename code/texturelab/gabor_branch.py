@@ -63,28 +63,44 @@ def make_gabor_bank(config: GaborConfig) -> list[tuple[np.ndarray, dict]]:
 def gabor_energy_maps(gray: np.ndarray, bank: list[tuple[np.ndarray, dict]], pool_size: int = 9,
                       energy: str = "squared") -> np.ndarray:
     """Return finite H x W x K locally pooled energy maps."""
-    # YOUR CODE HERE
     #
     # TODO 1 — Compute one response map per bank entry
     #   - Preserve bank order and correlate (do not convolve) gray with each kernel.
-    #
-    # TODO 2 — Convert responses to non-negative energy
-    #   - For "squared", square the signed response.
-    #   - For "absolute", take its absolute value.
-    #   - Raise ValueError for any other energy name.
-    #
-    # TODO 3 — Pool and assemble the channels
-    #   - Apply box_mean with pool_size to every energy map.
-    #   - Pooling must preserve the original image height and width.
+    channels = []
+    for kernel, _ in bank:
+        response = correlate2d(gray, kernel)
+
+        # TODO 2 — Convert responses to non-negative energy
+        #   - For "squared", square the signed response.
+        #   - For "absolute", take its absolute value.
+        #   - Raise ValueError for any other energy name.
+        if energy == "squared":
+            energy_map = response ** 2
+        elif energy == "absolute":
+            energy_map = np.abs(response)
+        else:
+            raise ValueError(f"unknown energy mode: {energy!r}")
+
+        # TODO 3 — Pool and assemble the channels
+        #   - Apply box_mean with pool_size to every energy map.
+        #   - Pooling must preserve the original image height and width.
+        pooled = box_mean(energy_map, pool_size)
+        channels.append(pooled)
+
     #   - Stack maps on the final axis to obtain H x W x K float32 output.
-    #
+    result = np.stack(channels, axis=-1).astype(np.float32)
+
     # TODO 4 — Check numerical validity
     #   - Raise FloatingPointError if any returned value is NaN or infinite.
-    raise NotImplementedError
+    if not np.all(np.isfinite(result)):
+        raise FloatingPointError("gabor_energy_maps produced non-finite values")
+
+    return result
 
 if __name__ == "__main__":
     # Quick sanity check of the Gabor bank generation
     config = GaborConfig()
     bank = make_gabor_bank(config)
+    result = gabor_energy_maps(np.random.rand(64, 64).astype(np.float32), bank, pool_size=config.pool_size, energy=config.energy)
     print(f"Generated {len(bank)} Gabor kernels with shape {bank[0][0].shape} and dtype {bank[0][0].dtype}")
-    print(bank[0][1])  # Print metadata for the first kernel
+    print(f"Generated energy maps with shape {result.shape} and dtype {result.dtype}")
