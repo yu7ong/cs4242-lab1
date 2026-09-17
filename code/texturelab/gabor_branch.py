@@ -101,5 +101,6 @@ if __name__ == "__main__":
     # Quick sanity check of the Gabor bank generation
     config = GaborConfig()
     bank = make_gabor_bank(config)
+    result = gabor_energy_maps(np.random.rand(64, 64).astype(np.float32), bank, pool_size=config.pool_size, energy=config.energy)
     print(f"Generated {len(bank)} Gabor kernels with shape {bank[0][0].shape} and dtype {bank[0][0].dtype}")
-    print(bank[0][1])  # Print metadata for the first kernel
+    print(f"Generated energy maps with shape {result.shape} and dtype {result.dtype}")
