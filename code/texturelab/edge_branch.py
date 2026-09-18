@@ -82,18 +82,29 @@ def adaptive_thresholds(nms: np.ndarray, config: EdgeConfig) -> tuple[float, flo
     # TODO 1 — Isolate useful responses
     #   - Estimate thresholds from strictly positive NMS values only.
     #   - If none exist, return a pair that produces no strong/weak edges.
-    #
+    positive = nms[nms > 0]
+    if positive.size == 0:
+        return (float("inf"), float("inf"))
+    
     # TODO 2 — Compute the high threshold
     #   - "percentile": use config.high_percentile on positive values.
     #   - "robust": use median + 2.5 * 1.4826 * median absolute deviation.
     #       - 1.4826 is a mathematically motivated conversion from MAD to a standard-deviation-like scale.
     #       - 2.5 is a scale multiplier for robust outlier rejection.
     #   - Reject unknown threshold_method values with ValueError.
-    #
+    if config.threshold_method == "percentile":
+        high = np.percentile(positive, config.high_percentile)
+    elif config.threshold_method == "robust":
+        median = np.median(positive)
+        mad = np.median(np.abs(positive - median))
+        high = median + 2.5 * 1.4826 * mad
+    else:
+        raise ValueError(f"unknown threshold method: {config.threshold_method}")
     # TODO 3 — Compute and return the low threshold
     #   - low is config.low_ratio multiplied by high.
     #   - Return ordinary Python floats in (low, high) order.
-    raise NotImplementedError
+    low = config.low_ratio * high
+    return (float(low), float(high))
 
 
 def hysteresis(strong: np.ndarray, weak: np.ndarray, connectivity: int = 8) -> np.ndarray:
