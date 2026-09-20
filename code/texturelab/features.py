@@ -53,7 +53,7 @@ def extract_local_features(image: np.ndarray, config: FeatureConfig) -> tuple[np
     #   - For gradient energy, square magnitude, box-pool it with density_size,
     #     add a singleton channel axis, and name it gradient_energy.
     
-    if config.include_gradient or config.include_edge:
+    if config.include_gradient or config.include_edges:
         edge = detect_edges(gray, config.edge)
     if config.include_gradient:
         grad_energy = edge["magnitude"] ** 2
@@ -65,7 +65,7 @@ def extract_local_features(image: np.ndarray, config: FeatureConfig) -> tuple[np
     #   - Map directions modulo pi, divide the unsigned orientation range into
     #     config.edge.n_orientations bins, and pool edges belonging to each bin.
     #   - Name bins edge_orientation_0, edge_orientation_1, and so on.
-    if config.include_edge:
+    if config.include_edges:
         edge_density = box_mean(edge["edges"].astype(np.float32), config.edge.density_size)
         chunks.append(edge_density[..., np.newaxis])
         names.append("edge_density")
