@@ -115,17 +115,42 @@ def hysteresis(strong: np.ndarray, weak: np.ndarray, connectivity: int = 8) -> n
     #   - Require matching mask shapes and connectivity equal to 4 or 8.
     #   - Convert inputs to Boolean masks without modifying the caller's arrays.
     #   - Seed the result and a deque with every strong-pixel coordinate.
-    #
+    if strong.shape != weak.shape:
+        raise ValueError("strong and weak masks must have matching shapes")
+    if connectivity not in (4, 8):
+        raise ValueError("connectivity must be 4 or 8")
+
+
+    strong_bool = strong.astype(bool)
+    weak_bool = weak.astype(bool)
+
+    H, W = strong_bool.shape
+    result = strong_bool.copy()
+    queue = deque(map(tuple, np.argwhere(strong_bool)))
+
     # TODO 2 — Define the neighbourhood
     #   - Four-connectivity uses vertical/horizontal offsets.
     #   - Eight-connectivity additionally includes all diagonal offsets.
-    #
+    if connectivity == 4:
+        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    else:
+        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1),
+                   (-1, -1), (-1, 1), (1, -1), (1, 1)]
     # TODO 3 — Traverse the full connected component
     #   - Pop a coordinate, check in-bounds allowed neighbours, and accept every
     #     unvisited weak pixel connected to a seed.
     #   - Enqueue newly accepted pixels so multi-pixel weak chains are retained.
     #   - Return the final Boolean mask after the queue is exhausted.
-    raise NotImplementedError
+    while queue:
+        r, c = queue.popleft()
+        for dr, dc in offsets:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < H and 0 <= nc < W:
+                if weak_bool[nr, nc] and not result[nr, nc]:
+                    result[nr, nc] = True
+                    queue.append((nr, nc))
+
+    return result
 
 
 def detect_edges(gray: np.ndarray, config: EdgeConfig) -> dict[str, np.ndarray | float]:
