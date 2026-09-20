@@ -105,15 +105,29 @@ def global_pool(feature_map: np.ndarray,
     #
     # TODO 1 — Flatten spatial positions
     #   - Reshape H x W x D into (H*W) x D without changing channel order.
-    #
+    H, W, D = feature_map.shape
+    flat = feature_map.reshape(H * W, D)
     # TODO 2 — Implement the supported statistics
     #   - Support mean, std, p10, p50, and p90, each computed per channel.
     #   - Raise ValueError naming an unsupported statistic.
-    #
+    results = []
+    for stat in statistics:
+        if stat == "mean":
+            results.append(flat.mean(axis=0))
+        elif stat == "std":
+            results.append(flat.std(axis=0))
+        elif stat == "p10":
+            results.append(np.percentile(flat, 10, axis=0))
+        elif stat == "p50":
+            results.append(np.percentile(flat, 50, axis=0))
+        elif stat == "p90":
+            results.append(np.percentile(flat, 90, axis=0))
+        else:
+            raise ValueError(f"unsupported statistic: {stat}")
     # TODO 3 — Assemble the descriptor
     #   - Evaluate statistics in the exact caller-supplied order.
     #   - Concatenate their D-vectors and return a one-dimensional float32 array.
-    raise NotImplementedError
+    return np.concatenate(results).astype(np.float32)
 
 
 def feature_family_indices(names: list[str]) -> dict[str, list[int]]:
