@@ -136,9 +136,14 @@ def feature_family_indices(names: list[str]) -> dict[str, list[int]]:
     #
     # TODO 1 — Create all required keys
     #   - Initialise colour, gabor, gradient, and edge to empty index lists.
-    #
+    families = {"colour": [], "gabor": [], "gradient": [], "edge": []}
     # TODO 2 — Assign channels by their stable name prefix
     #   - Iterate through names in order, take the text before the first "_",
     #     and append the channel index to the matching family.
     #   - Return every family key even when that family has no channels.
-    raise NotImplementedError
+    for i, name in enumerate(names):
+        prefix = name.split("_")[0]
+        if prefix in families:
+            families[prefix].append(i)
+
+    return families
