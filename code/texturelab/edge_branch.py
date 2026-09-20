@@ -163,9 +163,22 @@ def detect_edges(gray: np.ndarray, config: EdgeConfig) -> dict[str, np.ndarray |
     #   - Run nms_interpolated on magnitude/direction.
     #   - Obtain (low, high) from adaptive_thresholds.
     #   - Strong pixels meet/exceed high; weak pixels meet/exceed low but are not strong.
-    #
+    nms = nms_interpolated(magnitude, direction)
+    low, high = adaptive_thresholds(nms, config)
+    strong = nms >= high
+    weak = (nms >= low) & ~strong
     # TODO 2 — Link and package the result
     #   - Run hysteresis with config.connectivity.
     #   - Return gx, gy, magnitude, direction, nms, low, high, and edges using
     #     exactly those dictionary keys so downstream feature code remains stable.
-    raise NotImplementedError
+    edges = hysteresis(strong, weak, config.connectivity)
+    return {
+        "gx": gx,
+        "gy": gy,
+        "magnitude": magnitude,
+        "direction": direction,
+        "nms": nms,
+        "low": low,
+        "high": high,
+        "edges": edges,
+    }
