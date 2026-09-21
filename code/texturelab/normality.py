@@ -131,22 +131,54 @@ def predict_anomaly(feature_map: np.ndarray, model: NormalModel, config: Normali
 def select_mask_threshold(score_maps: list[np.ndarray], masks: list[np.ndarray],
                           candidates: int = 80) -> float:
     """Choose the pixel-F1-optimal threshold on public validation only."""
-    # YOUR CODE HERE
-    #
     # TODO 1 — Validate the validation inputs
     #   - Require matching non-empty score/mask collections and candidates >= 2.
     #   - Convert scores to float and masks to bool; require matching shapes and
     #     finite scores for every pair.
     #   - Callers handle border cropping, so do not crop again here.
-    #
+    if not score_maps or not masks:
+        raise ValueError("score_maps and masks must be non-empty")
+    if len(score_maps) != len(masks):
+        raise ValueError("score_maps and masks must have matching lengths")
+    if candidates < 2:
+        raise ValueError("candidates must be >= 2")
+
+    scores = []
+    bool_masks = []
+    for s, m in zip(score_maps, masks):
+        s = np.asarray(s, dtype=float)
+        m = np.asarray(m, dtype=bool)
+        if s.shape != m.shape:
+            raise ValueError("each score map and mask must share the same shape")
+        if not np.all(np.isfinite(s)):
+            raise ValueError("score maps must contain only finite values")
+        scores.append(s)
+        bool_masks.append(m)
+
     # TODO 2 — Build candidate thresholds
     #   - Flatten and concatenate all validation pixels.
     #   - Use evenly spaced quantile levels from 0.5 through 0.999.
-    #
+    flat_scores = np.concatenate([s.reshape(-1) for s in scores])
+    flat_masks = np.concatenate([m.reshape(-1) for m in bool_masks])
+    quantile_levels = np.linspace(0.5, 0.999, candidates)
+    thresholds = np.quantile(flat_scores, quantile_levels)
+
     # TODO 3 — Select by pixel F1
     #   - For each threshold, predict score >= threshold and compute TP/FP/FN.
     #   - Use 2*TP / max(1, 2*TP + FP + FN) to avoid division by zero.
     #   - Keep the threshold with the greatest F1; deterministic ties should
     #     retain the first encountered candidate.
     #   - Return the selected threshold as a Python float.
-    raise NotImplementedError
+    best_f1 = -1.0
+    best_threshold = float(thresholds[0])
+    for threshold in thresholds:
+        predicted = flat_scores >= threshold
+        tp = np.count_nonzero(predicted & flat_masks)
+        fp = np.count_nonzero(predicted & ~flat_masks)
+        fn = np.count_nonzero(~predicted & flat_masks)
+        f1 = 2 * tp / max(1, 2 * tp + fp + fn)
+        if f1 > best_f1:
+            best_f1 = f1
+            best_threshold = float(threshold)
+
+    return best_threshold
