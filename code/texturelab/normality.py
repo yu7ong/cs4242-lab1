@@ -96,24 +96,36 @@ def fit_normal_model(feature_maps: list[np.ndarray] | np.ndarray, config: Normal
 def predict_anomaly(feature_map: np.ndarray, model: NormalModel, config: NormalityConfig
                     ) -> tuple[np.ndarray, float, np.ndarray]:
     """Return dense score, image-level score, and predicted mask."""
-    # YOUR CODE HERE
-    #
     # TODO 1 — Validate feature compatibility
     #   - The final feature dimension must equal the fitted model mean length.
-    #
+    if feature_map.shape[-1] != model.mean.shape[-1]:
+        raise ValueError("feature_map's feature dimension does not match the fitted model")
+
     # TODO 2 — Compute the dense anomaly score
     #   - Use _scores for RMS standardized distance with config.epsilon.
     #   - Smooth coherent evidence with _pool_score.
-    #
+    raw_score = _scores(feature_map, model.mean, model.std, config.epsilon)
+    score = _pool_score(raw_score, config)
+
     # TODO 3 — Aggregate an image-level score
     #   - Crop the unreliable border with _interior and take
     #     config.image_percentile over that interior only.
-    #
+    interior_score = _interior(score, config.ignore_border)
+    image_score = np.percentile(interior_score, config.image_percentile)
+
     # TODO 4 — Produce the binary localization mask
     #   - Threshold the full score map at model.threshold.
     #   - Force the configured outer border to False without altering scores.
     #   - Return (float32 score map, Python-float image score, Boolean mask).
-    raise NotImplementedError
+    mask = score >= model.threshold
+    border = config.ignore_border
+    if border > 0:
+        mask[:border, :] = False
+        mask[-border:, :] = False
+        mask[:, :border] = False
+        mask[:, -border:] = False
+
+    return score.astype(np.float32), float(image_score), mask.astype(bool)
 
 
 def select_mask_threshold(score_maps: list[np.ndarray], masks: list[np.ndarray],
