@@ -41,29 +41,56 @@ def _interior(score: np.ndarray, border: int) -> np.ndarray:
 def fit_normal_model(feature_maps: list[np.ndarray] | np.ndarray, config: NormalityConfig,
                      feature_names: list[str] | None = None) -> NormalModel:
     """Fit normal feature statistics using normal training maps only."""
-    # YOUR CODE HERE
-    #
     # TODO 1 — Normalise and validate the collection
     #   - Accept either one H x W x D array or a non-empty collection of maps.
     #   - Reject an empty collection; preserve the common feature dimension.
-    #
+    maps = [feature_maps] if isinstance(feature_maps, np.ndarray) else list(feature_maps)
+    if not maps:
+        raise ValueError("feature_maps must be a non-empty collection")
+
+    n_features = maps[0].shape[-1]
+    if any(m.shape[-1] != n_features for m in maps):
+        raise ValueError("all feature maps must share the same feature dimension")
+
     # TODO 2 — Build the normal patch sample
     #   - Flatten each map to (H*W) x D and concatenate across training images.
     #   - If there are more than config.max_samples rows, select exactly that
     #     many without replacement using config.random_seed.
-    #
+    samples = np.concatenate([m.reshape(-1, n_features) for m in maps], axis=0)
+    if samples.shape[0] > config.max_samples:
+        rng = np.random.default_rng(config.random_seed)
+        indices = rng.choice(samples.shape[0], size=config.max_samples, replace=False)
+        samples = samples[indices]
+
     # TODO 3 — Fit diagonal normal statistics
     #   - Compute a D-vector mean and population standard deviation.
-    #
+    mean = samples.mean(axis=0)
+    std = samples.std(axis=0)
+
     # TODO 4 — Estimate a normal-only provisional threshold
     #   - Score every original map with _scores, smooth it with _pool_score, crop
     #     the configured unreliable border with _interior, then concatenate.
     #   - Use config.mask_threshold when explicitly supplied; otherwise take
     #     config.threshold_percentile of the pooled interior normal scores.
-    #
+    if config.mask_threshold is not None:
+        threshold = config.mask_threshold
+    else:
+        pooled_scores = [
+            _interior(_pool_score(_scores(m, mean, std, config.epsilon), config), config.ignore_border)
+            for m in maps
+        ]
+        normal_scores = np.concatenate([s.reshape(-1) for s in pooled_scores])
+        threshold = np.percentile(normal_scores, config.threshold_percentile)
+
     # TODO 5 — Return the model
     #   - Store float32 mean/std, a Python-float threshold, and feature_names.
-    raise NotImplementedError
+
+    return NormalModel(
+        mean=mean.astype(np.float32),
+        std=std.astype(np.float32),
+        threshold=float(threshold),
+        feature_names=feature_names,
+    )
 
 
 def predict_anomaly(feature_map: np.ndarray, model: NormalModel, config: NormalityConfig
