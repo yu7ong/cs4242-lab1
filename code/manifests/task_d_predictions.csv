@@ -1,1 +1,108 @@
 query_id	material	condition	predicted_label	is_defective	confidence	evidence	prompt	model_version	run_date	raw_response_file
+taskD-D1-carpet	carpet	color	stain	TRUE	88	"A diffuse dark discoloration sits left of center in the lower half of the image (roughly x 320–480, y 590–740); it darkens the yarns without disturbing the regular plain-weave structure, which is consistent with a stain rather than a weave fault."	"```markdown
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/86358c68-f350-4de3-9ab4-c46e0da3af0d
+taskD-D1-grid	grid	broken	broken mesh strands	TRUE	95	"Two areas of the expanded metal mesh show broken strands, one in the upper center and one across the lower portion, where wires are severed with loose bent ends curling out and the regular diamond cells merge into enlarged open gaps."	"```markdown
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/b0efd4d4-c2a9-4481-bb75-f639be926c26
+task-D1-leather	leather	cut	cut / puncture	TRUE	92	"Near the center-left of the brown grained leather, a short diagonal slit with a small torn, frayed opening exposing lighter underlying fibers breaks the otherwise uniform pebbled texture."	"```markdown
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/8b12a7f0-7c78-45b7-a86e-f7dce8d65ba4
+task-D1-tile	tile	crack	crack	TRUE	95	"A thin, dark, Y-shaped fracture line runs through the speckled tile surface, with two branches converging at the center and continuing as a single line to the bottom edge."	"```markdown
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/7f0ce88e-8e86-4727-88ab-751c58dcafe9
+task-D1-wood	wood	sratch	crack	TRUE	72	"A continuous vertical split runs the full height of the panel just right of center, with frayed, lighter-colored exposed fibers along its left edge that differ from the surrounding grain."	"```markdown
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/d8cb767e-c2cc-45d8-b3b3-f0534b43c634
+taskD-D2-carpet	carpet	color	color	TRUE	85	"A dark, diffuse stain sits left of center in the lower half (around x?320–480, y?590–730) while the woven threads there stay intact, so the defect is a localized discoloration rather than missing or cut material."	"Here is a description of the above material image:
+
+  material: carpet
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  hole: Material is missing in a compact hole-like region.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+
+```
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/66967f0f-b661-4870-999d-cb172d70088f
+taskD-D2-grid	grid	broken	broken	TRUE	92	"Two regions (upper-center and lower-left/lower-right) show severed mesh strands with curled free ends and merged, enlarged openings where the repeating diamond grid is interrupted."	"Here is a description of the above material image:
+
+Q2 — grid
+  bent: The regular grid lines are locally warped or displaced.
+  broken: Part of the repeating grid is interrupted or missing.
+  glue: A localized glue deposit changes the surface appearance.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+```
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/7a7a8e18-6e8b-4582-9c6c-a29acc8c4440
+taskD-D2-leather	leather	cut	poke	TRUE	82	"Left of center, a small dark puncture with light, frayed fibers showing through sits at the end of a short indented groove that breaks the normal grain pattern."	"Here is a description of the above material image:
+   material: leather
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  fold: The surface is creased or folded out of its normal plane.
+  glue: A localized glue deposit changes the surface appearance.
+  poke: A small puncture-like indentation or opening is visible.
+
+
+```
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/a718f9d2-eb9e-4712-b20f-f531c7eef78e
+taskD-D2-tile	tile	crack	crack	TRUE	95	"A thin, dark, sharply defined fracture line runs up from the bottom center and forks into a Y shape, cutting across the otherwise uniform speckled tile texture."	"Here is a description of the above material image:
+material: tile
+  crack: A narrow fracture-like line crosses the material surface.
+  glue_strip: An elongated strip of adhesive lies on the tile.
+  gray_stroke: A grey linear mark appears across the tile.
+  oil: An oily region changes colour or reflectance.
+  rough: A localized patch is visibly rougher than normal.
+
+
+```
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/c3114e6f-d8b9-4d98-af47-84ae083c4e27
+taskD-D2-wood	wood	scratch	none	FALSE	65	"The dark elongated streaks match the natural open-pore grain of oak, and the vertical line near the center looks like an ordinary joint between two boards, with only slight lighter edge fibers and no clear hole, stain, discoloration, or scratch crossing the grain."	"Here is a description of the above material image:
+
+material: wood
+  color: A localized region has an abnormal colour or tone.
+  combined: More than one defect mechanism appears in the same image.
+  hole: Material is missing in a compact hole-like region.
+  liquid: A liquid stain changes colour or reflectance locally.
+  scratch: A thin elongated abrasion crosses the surface.
+
+
+```
+Inspect this surface image. Is anything visibly abnormal? Give a short defect name if abnormal, confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+```"	Claude Opus 5.5 Medium	4-Oct-26	https://claude.ai/share/d6ebbd7e-5214-4c92-86dd-66a7720cc198
