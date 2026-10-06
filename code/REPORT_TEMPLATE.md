@@ -76,27 +76,26 @@ MVTec training images only, [4 per material = 20 images]. It was evaluated on th
 **Results.** 
 Accuracy was 0.940 and macro-F1 was 0.929. 
 
+Carpet and wood were classified perfectly. Leather and tile were nearly perfect (1 error each). Grid had recall of only 0.65: 5 grid images were predicted as carpet and 8 as tile.
+
 ![Confusion Matrix](student_files/taskA_confusion_matrix.png)
 
 **Figure** Confusion Matrix 
-
-Carpet and wood were classified perfectly. Leather and tile were nearly perfect (1 error each). Grid had recall of only 0.65: 5 grid images were predicted as carpet and 8 as tile.
-
-
-![Confidence Histogram](student_files/taskA_confidence_histograms.png) 
-
-**Figure** Confidence Histogram
 
 On the left plot, most correct predictions are made with high confidence, concentrated in the 0.9-1.0 bin. Errors, however, split into two groups. Around half of the errors fall at 0.5-0.6 confidence and the other half occur at 0.9-1.0 confidence, so confidence alone cannot detect every mistake.
 
 On the right plot, good and defective images have similar confidence distributions, with both concentrated at 0.9-1.0, consistent with their similar accuracy (0.938 vs 0.940). The larger defective bars reflect the larger number of defective test images (183 vs 65), not higher confidence. Defects therefore do not appear to reduce the classifier's confidence.
 
-![Reliability Diagram](student_files/taskA_reliability_diagram.png)
+![Confidence Histogram](student_files/taskA_confidence_histograms.png) 
 
-**Figure** Reliability Diagram
+**Figure** Confidence Histogram
 
 The largest bin (mean confidence ~0.95, accuracy~0.95) lies almost on the diagonal, and since it holds most of the test images. The overall calibration is good. The ~0.85 bin lies slightly above
 the diagonal, the classifier is mildly under-confident there. The clear exception is the bin at mean confidence ~0.55, where accuracy was only ~0.15. Predictions in this range are strongly over-confident. 
+
+![Reliability Diagram](student_files/taskA_reliability_diagram.png)
+
+**Figure** Reliability Diagram
 
 **Errors.**
 
@@ -158,16 +157,21 @@ Selected from the first validation image per primary class.
 
 Example 1: (Success)
 A banded image (labels: banded, striped) received banded p = ~0.80, above all other terms. It consists of thick, sharply separated vertical bands, producing strong, regular edges. However, stained received second highest with p = ~ 0.18. 
+
 ![Example 1](student_files/taskC_example1.png)
 
 Example 2: (High Scoring Error)
 A striped image (labels: striped) recieved stained p = ~0.50, against striped p = ~0.08. The image contains large smooth colour regions of orange and blue next to fine surface ridges. The model may be reading the large colour regions as a stain-like pattern, while the stripes, which are curved and unevenly spaced, give weaker evidence.
+
 ![Example 2](student_files/taskC_example2.png)
 
 Example 3: (With No Clear Evidence)
 A stained image (labels: stained) received braided p = ~0.17 against stained p = 0.15, with every other score having a similar p. Model has no strong evidence for a certain term. Patterns of irregular dark and light patches would more generic features that resemble several terms. 
 
+![Example 3](student_files/taskC_example3.png)
+
 **Which attributes map to measurable evidence?**
+
 Table: Average Precision by Feature Family for Each DTD Texture Attribute
 | Attribute | Colour | Gabor | Gradient |  Edge | All Features |
 | --------- | -----: | ----: | -------: | ----: | -----------: |
