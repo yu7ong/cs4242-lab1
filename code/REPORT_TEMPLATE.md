@@ -1,7 +1,3 @@
-In this section, three changes were made: paraphrasing the description of each label, paraphrasing the instructions, and changing the order of the instructions (question, output, then description). Despite these changes, the predicted output did not change, and its confidence changed only minimally. The overall description of the material also remained consistent. Hence, the model appears robust to prompt sensitivity. All chats used Claude Opus 5.5 (medium) on 6 October 2026.# CS4243 Lab 1 reference implementation report
-
-This compact report records how every `YOUR CODE HERE` section is exercised. This is where you elaborate and explain your implementation and results you observed. Try to add visual/graphs and grounded reasoning to highlight your understanding.
-
 ## Gabor Implementation
 `make_gabor_bank`
 Creates a collection of Gabor filters using the setting in config file. For every combination of frequency, orientation and phase, it creates a Gabor kernel. Each kernel is then made zero-mean and  normalized to unit norm. The function also stores the frequency, orientation and phase of each kernel as metadata.
@@ -256,7 +252,7 @@ The confidence for correct, incorrect predictions are shown in the diagram below
 
 ![alt text](taskd_confidence_by_condition.png)
 
-From the above diagram, the confidence levels are exact predictions are higher compared to incorrect predictions.
+From the above diagram, the confidence levels are exact predictions are higher compared to incorrect predictions. This might be because of the overconfidence of LLMs, where in one study, it was recorded that LLMs overestimate the probability that their answer is correct between 20% and 60% (Sun et. al, 2025). With examples and defintions, LLMs have a source of reference and hence lower its confidence when their initial belief deviates from the facts provided. 
 
 #### Definitions and Examples in Output Predictions
 
@@ -317,9 +313,5 @@ In this section, three changes were made: paraphrasing the description of each l
 
 #### Prior Exposure
 Since MVTec AD has been publicly available since 2019, and Claude Opus 5.5 was trained on data up to June 2026, it is likely that the dataset was included in the model's training data. This may explain why, in D1, the generated labels closely resemble those in the MVTec AD dataset, despite no predefined labels being provided.
-
-
-Discussion Points: 
-- model updates
 
 
