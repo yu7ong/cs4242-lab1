@@ -15,34 +15,64 @@ def bilinear_sample(image: np.ndarray, y: np.ndarray, x: np.ndarray) -> np.ndarr
     #   - Read image height/width and clamp y/x to the valid closed intervals.
     #   - Compute floor coordinates (y0, x0) and the next coordinates (y1, x1).
     #   - Clamp y1/x1 as well so samples at the last row/column remain valid.
-    #
+    H, W = image.shape
+    y = np.clip(y, 0, H - 1)
+    x = np.clip(x, 0, W - 1)
+    y0 = np.floor(y).astype(int)
+    x0 = np.floor(x).astype(int)
+    y1 = np.clip(y0 + 1, 0, H - 1)
+    x1 = np.clip(x0 + 1, 0, W - 1)
     # TODO 2 — Compute interpolation weights
     #   - wy and wx are the fractional offsets from (y0, x0).
     #   - Form the four complementary weights for top-left, top-right,
     #     bottom-left, and bottom-right pixels.
-    #
+    wy = y - y0 
+    wx = x - x0
+    top_left     = image[y0, x0]
+    top_right    = image[y0, x1]
+    bottom_left  = image[y1, x0]
+    bottom_right = image[y1, x1]
     # TODO 3 — Return the weighted sample
     #   - Support array-valued y/x so a whole image grid can be sampled at once.
     #   - An exact integer coordinate should reproduce the corresponding pixel.
-    raise NotImplementedError
+    top    = top_left * (1 - wx) + top_right * wx
+    bottom = bottom_left * (1 - wx) + bottom_right * wx
+    result = top * (1 - wy) + bottom * wy
+    return result
 
 
 def nms_interpolated(magnitude: np.ndarray, direction: np.ndarray) -> np.ndarray:
     """Thin gradient magnitude along the exact image-coordinate direction."""
-    # YOUR CODE HERE
-    #
     # TODO 1 — Validate inputs
     #   - Require matching two-dimensional magnitude and direction arrays.
-    #
+    if magnitude.shape != direction.shape or magnitude.ndim != 2:
+        raise ValueError("magnitude and direction must be matching 2-D arrays")
+
     # TODO 2 — Construct exact-direction comparison coordinates
     #   - Build row/column index grids for the complete image.
     #   - In image coordinates, the unit step is dy=sin(theta), dx=cos(theta).
     #   - Bilinearly sample magnitude one step forward and one step backward.
-    #
+    h, w = magnitude.shape
+    ys, xs = np.mgrid[0:h, 0:w].astype(np.float64)
+
+    dy = np.sin(direction)
+    dx = np.cos(direction)
+
+    mag_fwd = bilinear_sample(magnitude, ys + dy, xs + dx)
+    mag_bwd = bilinear_sample(magnitude, ys - dy, xs - dx)
+
     # TODO 3 — Suppress non-maxima
     #   - Keep the original magnitude when it is >= both interpolated neighbours.
     #   - Write zero elsewhere, return float32, and explicitly zero all four borders.
-    raise NotImplementedError
+    keep = (magnitude >= mag_fwd) & (magnitude >= mag_bwd)
+    result = np.where(keep, magnitude, 0.0).astype(np.float32)
+
+    result[0, :] = 0
+    result[-1, :] = 0
+    result[:, 0] = 0
+    result[:, -1] = 0
+
+    return result
 
 
 def adaptive_thresholds(nms: np.ndarray, config: EdgeConfig) -> tuple[float, float]:
@@ -52,18 +82,29 @@ def adaptive_thresholds(nms: np.ndarray, config: EdgeConfig) -> tuple[float, flo
     # TODO 1 — Isolate useful responses
     #   - Estimate thresholds from strictly positive NMS values only.
     #   - If none exist, return a pair that produces no strong/weak edges.
-    #
+    positive = nms[nms > 0]
+    if positive.size == 0:
+        return (float("inf"), float("inf"))
+    
     # TODO 2 — Compute the high threshold
     #   - "percentile": use config.high_percentile on positive values.
     #   - "robust": use median + 2.5 * 1.4826 * median absolute deviation.
     #       - 1.4826 is a mathematically motivated conversion from MAD to a standard-deviation-like scale.
     #       - 2.5 is a scale multiplier for robust outlier rejection.
     #   - Reject unknown threshold_method values with ValueError.
-    #
+    if config.threshold_method == "percentile":
+        high = np.percentile(positive, config.high_percentile)
+    elif config.threshold_method == "robust":
+        median = np.median(positive)
+        mad = np.median(np.abs(positive - median))
+        high = median + 2.5 * 1.4826 * mad
+    else:
+        raise ValueError(f"unknown threshold method: {config.threshold_method}")
     # TODO 3 — Compute and return the low threshold
     #   - low is config.low_ratio multiplied by high.
     #   - Return ordinary Python floats in (low, high) order.
-    raise NotImplementedError
+    low = config.low_ratio * high
+    return (float(low), float(high))
 
 
 def hysteresis(strong: np.ndarray, weak: np.ndarray, connectivity: int = 8) -> np.ndarray:
@@ -74,17 +115,42 @@ def hysteresis(strong: np.ndarray, weak: np.ndarray, connectivity: int = 8) -> n
     #   - Require matching mask shapes and connectivity equal to 4 or 8.
     #   - Convert inputs to Boolean masks without modifying the caller's arrays.
     #   - Seed the result and a deque with every strong-pixel coordinate.
-    #
+    if strong.shape != weak.shape:
+        raise ValueError("strong and weak masks must have matching shapes")
+    if connectivity not in (4, 8):
+        raise ValueError("connectivity must be 4 or 8")
+
+
+    strong_bool = strong.astype(bool)
+    weak_bool = weak.astype(bool)
+
+    H, W = strong_bool.shape
+    result = strong_bool.copy()
+    queue = deque(map(tuple, np.argwhere(strong_bool)))
+
     # TODO 2 — Define the neighbourhood
     #   - Four-connectivity uses vertical/horizontal offsets.
     #   - Eight-connectivity additionally includes all diagonal offsets.
-    #
+    if connectivity == 4:
+        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    else:
+        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1),
+                   (-1, -1), (-1, 1), (1, -1), (1, 1)]
     # TODO 3 — Traverse the full connected component
     #   - Pop a coordinate, check in-bounds allowed neighbours, and accept every
     #     unvisited weak pixel connected to a seed.
     #   - Enqueue newly accepted pixels so multi-pixel weak chains are retained.
     #   - Return the final Boolean mask after the queue is exhausted.
-    raise NotImplementedError
+    while queue:
+        r, c = queue.popleft()
+        for dr, dc in offsets:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < H and 0 <= nc < W:
+                if weak_bool[nr, nc] and not result[nr, nc]:
+                    result[nr, nc] = True
+                    queue.append((nr, nc))
+
+    return result
 
 
 def detect_edges(gray: np.ndarray, config: EdgeConfig) -> dict[str, np.ndarray | float]:
@@ -97,9 +163,22 @@ def detect_edges(gray: np.ndarray, config: EdgeConfig) -> dict[str, np.ndarray |
     #   - Run nms_interpolated on magnitude/direction.
     #   - Obtain (low, high) from adaptive_thresholds.
     #   - Strong pixels meet/exceed high; weak pixels meet/exceed low but are not strong.
-    #
+    nms = nms_interpolated(magnitude, direction)
+    low, high = adaptive_thresholds(nms, config)
+    strong = nms >= high
+    weak = (nms >= low) & ~strong
     # TODO 2 — Link and package the result
     #   - Run hysteresis with config.connectivity.
     #   - Return gx, gy, magnitude, direction, nms, low, high, and edges using
     #     exactly those dictionary keys so downstream feature code remains stable.
-    raise NotImplementedError
+    edges = hysteresis(strong, weak, config.connectivity)
+    return {
+        "gx": gx,
+        "gy": gy,
+        "magnitude": magnitude,
+        "direction": direction,
+        "nms": nms,
+        "low": low,
+        "high": high,
+        "edges": edges,
+    }
