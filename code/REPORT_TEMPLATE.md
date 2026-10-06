@@ -26,6 +26,23 @@ Converts the local feature map into a one fixed-length vector. It flattens the s
 `feature_family_indices`
 Groups feature channels according to their type, such as colour, Gabor, gradient and edge families. It returns the indices belonging to each type in the vector. 
 ## Normality Model
+`select_mask_threshold`
+Chooses the pixel F1 optimal threshold on public validation data only. It checks validation inputs before building candidate thresholds using evenly spaced quantile levels from 0.5 to 0.999. The function then calculate TP/FP/FN and F1 values for each threshold and select the best threshold that gives the largest F1 value. 
+
+`predict_anomaly`
+Scores a new feature map against a fitted model. It first checks the feature map's dimension before calculating a pooled dense anomaly map, an image-level score (a percentile of the interior scores only), and a binary mask from thresholding. The function returns the scope map, the image score and the image mask. 
+
+`fit_normal_model`
+Fits a per-feature diagonal Gaussian (mean and population std) from normal training feature maps. It validates inputs, flattens and concatenates all patches and sets a provisional threshold. It returns a NormalModel with float32 statistics. 
+
+`_interior`
+Crops a score map by the number of variable border pixels on all aides to eliminate unreliable image edges. It would return a cropped map or an unchanged map if the border indicated is 0 or negative. 
+
+`_pool_score`
+Smooths a score map with a box filter to supress isolated noisy patch responses while keeping spatially coherent anomalies visible. 
+
+`_score`
+Computes a per-location anomaly score by standardizing each feature against the model's mean and standard deviation, before taking the root mean square across the feature dimension. It returns a float32 score map. 
 
 ## Results and Analysis Task A-C
 #### Question 1
@@ -120,6 +137,9 @@ The confident error idx=58 is a good grid image predicted as carpet with confide
 ![Example of a high confidence error](student_files/taskA_highconfidence_error.png) 
 
 **Figure** Example of a High Confidence Error.
+
+### Task B
+
 
 ### Task C
 **Setup.** 
