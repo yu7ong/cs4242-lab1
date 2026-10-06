@@ -1,0 +1,149 @@
+Query ID,Condition,Predicted Label,Decision,Confidence,Visible Evidence,Exact Prompt,Evidence
+taskD-D2-leather,cut,poke,Defective,72,"Left of center there is a small puncture-like opening exposing lighter, fibrous material, with a short dark diagonal crease leading into it, which breaks the otherwise uniform grain.","Here is a description of the above material image:
+   material: leather
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  fold: The surface is creased or folded out of its normal plane.
+  glue: A localized glue deposit changes the surface appearance.
+  poke: A small puncture-like indentation or opening is visible.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/aa2afb84-bbac-47c4-9095-f635eb95a569
+taskD-D2-leather-change-description,cut,poke,Defective,78,"Left of center there is a small puncture hole with light-colored fibers exposed, plus a short dark indentation leading into it, breaking the otherwise uniform grain.","Here is a description of the above material image:
+   material: leather
+color: A specific area shows an unusual hue or shade.
+cut: A clean slice or gash breaks up the texture.
+fold: The material is bent or creased away from its flat surface.
+glue: A spot of adhesive residue alters how the surface looks.
+poke: A tiny hole or dent, like a puncture mark, can be seen.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/6ba3b291-890e-4080-b899-3f4d28bca711
+taskD-D2-leather-change-instruction,cut,poke,Defective,72,"Near the center-left there is a small torn puncture with lighter fibers exposed and a short diagonal indentation leading to it, which interrupts the otherwise uniform grain.","This is a list of material characteristics:
+   material: leather
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  fold: The surface is creased or folded out of its normal plane.
+  glue: A localized glue deposit changes the surface appearance.
+  poke: A small puncture-like indentation or opening is visible.
+
+Examine this image of the surface. Do you see any defects? If there is one, please provide a single label; if there isn't, answer ""good."" Include a confidence score between 0 and 100, along with one sentence describing the visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/82e85a63-a24d-4cbb-a59e-70c2a7191bba
+taskD-D2-leather-change-order,cut,poke,Defective,78,"Just left of center, a short diagonal dark streak ends in a small puncture-like opening with frayed, lighter exposed material that breaks the grain texture.","Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+
+Here is a description of the above material image:
+   material: leather
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  fold: The surface is creased or folded out of its normal plane.
+  glue: A localized glue deposit changes the surface appearance.
+  poke: A small puncture-like indentation or opening is visible.",https://claude.ai/share/f06489e2-6ed0-4d48-a857-9ee1b2ecb73c
+taskD-D2-tile,crack,crack,Defective,93,"A thin, dark, Y-shaped fracture line runs from the top edge and converges into a single jagged line extending to the bottom of the speckled tile surface.","Here is a description of the above material image:
+material: tile
+  crack: A narrow fracture-like line crosses the material surface.
+  glue_strip: An elongated strip of adhesive lies on the tile.
+  gray_stroke: A grey linear mark appears across the tile.
+  oil: An oily region changes colour or reflectance.
+  rough: A localized patch is visibly rougher than normal.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/d2e65921-f9a8-439f-8022-8c4f42bdc134
+taskD-D2-tile-change-description,crack,crack,Defective,95,"A thin, dark, branching line forms a Y-shape across the speckled tile, with two fractures from the top edges meeting at the center and continuing as a single line to the bottom edge.","Here is a description of the above material image:
+material: tile
+crack: A thin, break-like line runs across the surface of the material.
+glue_strip: A long band of adhesive sits on the tile.
+gray_stroke: A gray streak or line extends across the tile.
+oil: An area of oil alters the tile's color or how it reflects light.
+rough: A specific spot has a noticeably coarser texture than the rest.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/8b368ac0-541d-43ca-aa45-07e5c3ffaf4e
+taskD-D2-tile-change-instruction,crack,crack,Defective,95,"A thin, dark, sharply defined fracture line runs from the bottom center and branches into a Y shape toward the top of the speckled tile surface.","This is a list of material characteristics:
+material: tile
+  crack: A narrow fracture-like line crosses the material surface.
+  glue_strip: An elongated strip of adhesive lies on the tile.
+  gray_stroke: A grey linear mark appears across the tile.
+  oil: An oily region changes colour or reflectance.
+  rough: A localized patch is visibly rougher than normal.
+
+Examine this image of the surface. Do you see any defects? If there is one, provide a single label; if there isn't, answer ""good."" Include a confidence score between 0 and 100, along with one sentence describing the visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/a3333969-4606-4510-b976-f94c2dae83f8
+taskD-D2-tile-change-order,crack,crack,Defective,95,"A thin, dark, branching fracture line forms a Y-shape across the speckled tile surface, splitting from a single vertical crack at the bottom into two diverging lines toward the top.","Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+
+Here is a description of the above material image:
+material: tile
+  crack: A narrow fracture-like line crosses the material surface.
+  glue_strip: An elongated strip of adhesive lies on the tile.
+  gray_stroke: A grey linear mark appears across the tile.
+  oil: An oily region changes colour or reflectance.
+  rough: A localized patch is visibly rougher than normal.",https://claude.ai/share/74cdf631-d12f-43f6-b8cb-71ec357bbb70
+taskD-D2-wood,scratch,good,Not Defective,72,"The surface shows uniform oak-like grain with natural dark pore streaks and a straight vertical board joint, with no localized discoloration, stain, hole, or crossing scratch visible.","Here is a description of the above material image:
+
+material: wood
+  color: A localized region has an abnormal colour or tone.
+  combined: More than one defect mechanism appears in the same image.
+  hole: Material is missing in a compact hole-like region.
+  liquid: A liquid stain changes colour or reflectance locally.
+  scratch: A thin elongated abrasion crosses the surface.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/33ae8a73-d2bc-4d08-86f1-ffb7debe2dc9
+taskD-D2-wood-change-description,scratch,good,Not Defective,72,"The surface shows only natural oak grain, dark pore streaks, and the normal vertical seam between two boards, with no visible hole, stain, discoloration, or scratch.","Here is a description of the above material image:
+
+material: wood
+color: A specific area shows an unusual hue or shade.
+combined: Two or more types of defects are present in the same image.
+hole: A small, contained area of the material is missing, forming a hole.
+liquid: A spot of liquid staining alters the local color or how light reflects.
+scratch: A thin, long scrape runs across the surface.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/8782d68a-4bcc-411c-af56-be7fe39cb853
+taskD-D2-wood-change-instruction,scratch,good,Not Defective,68,"The surface shows uniform oak grain with natural dark pore streaks and a straight vertical joint between two boards, with no holes, stains, discoloured patches, or abrasion marks.","Here is a description of the above material image:
+
+material: wood
+  color: A localized region has an abnormal colour or tone.
+  combined: More than one defect mechanism appears in the same image.
+  hole: Material is missing in a compact hole-like region.
+  liquid: A liquid stain changes colour or reflectance locally.
+  scratch: A thin elongated abrasion crosses the surface.
+
+Examine this image of the surface. Do you see any defects? If there is one, provide a single label; if there isn't, answer ""good."" Include a confidence score between 0 and 100, along with one sentence describing the visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",https://claude.ai/share/5a9955d4-0e81-4786-b221-4a70c72526f6
+taskD-D2-wood-change-order,scratch,good,Not Defective,60,"The vertical line near the center looks like a normal joint between two boards with a slightly pale cut edge, and the dark streaks are ordinary oak grain pores, with no localized discoloration, holes, stains, or abrasions.","Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.
+
+Here is a description of the above material image:
+
+material: wood
+  color: A localized region has an abnormal colour or tone.
+  combined: More than one defect mechanism appears in the same image.
+  hole: Material is missing in a compact hole-like region.
+  liquid: A liquid stain changes colour or reflectance locally.
+  scratch: A thin elongated abrasion crosses the surface.",https://claude.ai/share/86a31e06-13f4-48ef-a668-005cb721747b

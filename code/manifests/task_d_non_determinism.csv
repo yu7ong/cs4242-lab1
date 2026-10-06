@@ -1,0 +1,190 @@
+Query ID,Condition,Predicted Label,Decision,Confidence,Visible Evidence,Exact Prompt,Model / Version,Run Date,Evidence,,,,,,,,
+taskD-D2-carpet,color,color,Defective,85,"A dark, diffuse stain sits left of center in the lower half (roughly x 320–480, y 590–720), while the weave pattern runs unbroken through it, which points to discoloration rather than missing material or a cut.","Here is a description of the above material image:
+
+  material: carpet
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  hole: Material is missing in a compact hole-like region.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/ffc9fc50-df12-4792-8729-5f051e2af961,,,,,,,,
+taskD-D2-carpet-v2,color,color,Defective,82,"A localized dark stain-like discoloration appears in the lower-left-center region (around x?330–480, y?590–720) while the weave structure there remains intact, indicating abnormal tone rather than missing or cut material.","Here is a description of the above material image:
+
+  material: carpet
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  hole: Material is missing in a compact hole-like region.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/333ca725-be65-4d80-b755-c75966c863fd,,,,,,,,
+taskD-D2-carpet-v3,color,color,Defective,85,"A localized dark stain discolors the weave in the lower-left-center area while the threads remain intact, with no missing material, cut, or foreign object.","Here is a description of the above material image:
+
+  material: carpet
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  hole: Material is missing in a compact hole-like region.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/ceddcf92-3623-4bfa-88fc-d6dcdbb83541,,,,,,,,
+taskD-D2-grid,broken,broken,Defective,90,"Several mesh strands are snapped with free curled ends near the upper center (around x?380–500, y?250–350) and in two places along the lower band (around x?80–220 and x?700–830, y?680–780), leaving enlarged open gaps in the otherwise regular diamond grid.","Here is a description of the above material image:
+
+material: grid
+  bent: The regular grid lines are locally warped or displaced.
+  broken: Part of the repeating grid is interrupted or missing.
+  glue: A localized glue deposit changes the surface appearance.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/e5e3a225-09a2-45dd-b2f6-7c07f676a513,,,,,,,,
+taskD-D2-grid-v2,broken,broken,Defective,92,"In two places (upper center and lower left/right), the mesh strands are severed with loose, curled ends, leaving enlarged open gaps where the repeating diamond pattern is interrupted.","Here is a description of the above material image:
+
+material: grid
+  bent: The regular grid lines are locally warped or displaced.
+  broken: Part of the repeating grid is interrupted or missing.
+  glue: A localized glue deposit changes the surface appearance.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/8950ae61-7300-4a1f-ac3e-fafa1a09a886,,,,,,,,
+taskD-D2-grid-v3,broken,broken,Defective,92,"In three areas (upper center near x?380–500, y?250–340; lower left near x?90–220, y?700–780; lower right near x?700–830, y?680–760), mesh strands are severed with loose, curled ends, leaving enlarged openings where the repeating diamond pattern is missing.","Here is a description of the above material image:
+
+material: grid
+  bent: The regular grid lines are locally warped or displaced.
+  broken: Part of the repeating grid is interrupted or missing.
+  glue: A localized glue deposit changes the surface appearance.
+  metal_contamination: A metallic foreign object lies on the surface.
+  thread: A foreign thread lies across the regular texture.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/e1c5ff2e-4710-4168-a3e5-d26d7900f7e9,,,,,,,,
+taskD-D2-leather,cut,poke,Defective,72,"Left of center there is a small puncture-like opening exposing lighter, fibrous material, with a short dark diagonal crease leading into it, which breaks the otherwise uniform grain.","Here is a description of the above material image:
+   material: leather
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  fold: The surface is creased or folded out of its normal plane.
+  glue: A localized glue deposit changes the surface appearance.
+  poke: A small puncture-like indentation or opening is visible.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/aa2afb84-bbac-47c4-9095-f635eb95a569,,,,,,,,
+taskD-D2-leather-v2,cut,poke,Defective,78,"Left of center (around x?400, y?650) there is a small puncture-like opening with exposed lighter material and a slight dimpled depression, with a short torn line trailing up-left from it, interrupting the otherwise uniform pebbled grain.","Here is a description of the above material image:
+   material: leather
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  fold: The surface is creased or folded out of its normal plane.
+  glue: A localized glue deposit changes the surface appearance.
+  poke: A small puncture-like indentation or opening is visible.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/a02b4fb1-90e5-4e07-8c0a-766a180ab302,,,,,,,,
+taskD-D2-leather-v3,cut,poke,Defective,82,"Left of center there is a small puncture-like opening with exposed lighter fibers and a short indented trail leading into it, breaking the otherwise uniform grain pattern.","Here is a description of the above material image:
+   material: leather
+  color: A localized region has an abnormal colour or tone.
+  cut: A sharp incision or sliced region interrupts the texture.
+  fold: The surface is creased or folded out of its normal plane.
+  glue: A localized glue deposit changes the surface appearance.
+  poke: A small puncture-like indentation or opening is visible.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/6f04e339-f35a-4085-8c83-6147366df7a5,,,,,,,,
+taskD-D2-tile,crack,crack,Defective,93,"A thin, dark, Y-shaped fracture line runs from the top edge and converges into a single jagged line extending to the bottom of the speckled tile surface.","Here is a description of the above material image:
+material: tile
+  crack: A narrow fracture-like line crosses the material surface.
+  glue_strip: An elongated strip of adhesive lies on the tile.
+  gray_stroke: A grey linear mark appears across the tile.
+  oil: An oily region changes colour or reflectance.
+  rough: A localized patch is visibly rougher than normal.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/d2e65921-f9a8-439f-8022-8c4f42bdc134,,,,,,,,
+taskD-D2-tile-v2,crack,crack,Defective,92,"A thin, dark, irregular Y-shaped fracture line runs from the top edges and merges into a single line extending down to the bottom of the speckled tile surface.","Here is a description of the above material image:
+material: tile
+  crack: A narrow fracture-like line crosses the material surface.
+  glue_strip: An elongated strip of adhesive lies on the tile.
+  gray_stroke: A grey linear mark appears across the tile.
+  oil: An oily region changes colour or reflectance.
+  rough: A localized patch is visibly rougher than normal.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/9dce76f2-1726-4b35-8278-beb7da3f5d4d,,,,,,,,
+taskD-D2-tile-v3,crack,crack,Defective,93,"A thin, dark, jagged fracture line runs through the speckled tile surface, splitting into a Y shape from the bottom center toward the top corners.","Here is a description of the above material image:
+material: tile
+  crack: A narrow fracture-like line crosses the material surface.
+  glue_strip: An elongated strip of adhesive lies on the tile.
+  gray_stroke: A grey linear mark appears across the tile.
+  oil: An oily region changes colour or reflectance.
+  rough: A localized patch is visibly rougher than normal.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/583dc1d4-4bf3-4a01-8c81-31dfcc883855,,,,,,,,
+taskD-D2-wood,scratch,good,Not Defective,72,"The surface shows uniform oak-like grain with natural dark pore streaks and a straight vertical board joint, with no localized discoloration, stain, hole, or crossing scratch visible.","Here is a description of the above material image:
+
+material: wood
+  color: A localized region has an abnormal colour or tone.
+  combined: More than one defect mechanism appears in the same image.
+  hole: Material is missing in a compact hole-like region.
+  liquid: A liquid stain changes colour or reflectance locally.
+  scratch: A thin elongated abrasion crosses the surface.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/33ae8a73-d2bc-4d08-86f1-ffb7debe2dc9,,,,,,,,
+taskD-D2-wood-v2,scratch,good,Not Defective,70,"The dark elongated streaks are consistent with natural oak pores and grain, and the vertical seam is a normal board joint with no visible holes, scratches, stains, or local discoloration.","Here is a description of the above material image:
+
+material: wood
+  color: A localized region has an abnormal colour or tone.
+  combined: More than one defect mechanism appears in the same image.
+  hole: Material is missing in a compact hole-like region.
+  liquid: A liquid stain changes colour or reflectance locally.
+  scratch: A thin elongated abrasion crosses the surface.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/3bff3659-96e7-41a3-bc5f-208835a42d0f,,,,,,,,
+taskD-D2-wood-v3,scratch,good,Not Defective,78,"The surface shows only uniform oak-like grain with normal dark elongated pores and a regular plank seam, with no localized discoloration, stain, hole, or abrasion visible.","Here is a description of the above material image:
+
+material: wood
+  color: A localized region has an abnormal colour or tone.
+  combined: More than one defect mechanism appears in the same image.
+  hole: Material is missing in a compact hole-like region.
+  liquid: A liquid stain changes colour or reflectance locally.
+  scratch: A thin elongated abrasion crosses the surface.
+
+Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected,  confidence from 0 to 100, and one sentence of visible evidence.
+
+Return JSON with
+> `is_defective`, `defect_name`, `confidence`, and `evidence`.",Claude Opus 5.5 Medium,6-Oct-26,https://claude.ai/share/c28d53be-772a-4bc9-af3f-b44a3b0fc0f4,,,,,,,,
