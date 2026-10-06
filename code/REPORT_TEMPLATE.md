@@ -18,8 +18,3 @@ Case when large pooling erases small features: A small scratch or defect on wood
 ## Results and Analysis Task A-C
 
 ## Results and Analysis Task D
-
-## Results and Analysis Custom Photos
-
-## AI-use disclosure table
-[AI-CODE] [AI-DESIGN] [HUMAN-CHECK]
