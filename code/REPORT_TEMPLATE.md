@@ -197,9 +197,9 @@ Likely connected edges: scratch, crack, cut, fold, thread, broken, bent. Thin ed
 
 Likely colour or diffuse texture: color, liquid, oil, glue, glue_strip, gray_stroke, rough, metal_contamination. Liquid and color do well because they are large, high-contrast regions, which suits the smoothed map. Oil, gray_stroke and rough (tile) score lowers as they are low-contrast against an already busy texture.
 
-![alt text](connected-edges.png)
+![alt text](student_files/connected-edges.png)
 
-![alt text](color-defects.png)
+![alt text](student_files/color-defects.png)
 
 The above two images show the defects with the largest edge ratio and colour shift, which shows the most likely connected edges and most likely colour or diffuse textures respectively.
 
@@ -207,7 +207,7 @@ The above two images show the defects with the largest edge ratio and colour shi
 
 One failure caused by image borders is that the model performs badly along image edges. Removing a 5-pixel border from a 64×64 material image discards about 29% of the image, as a 54×54 region remains. The discarded region may contain information that is essential for identifying a defect, especially when the defect lies near the image edges.
 
-![alt text](border-failure.png)
+![alt text](student_files/border-failure.png)
 
 This is shown in the image above, where the defect goes undetected when the borders are removed, since the most significant portion of the crack appears to be in the border.
 
@@ -319,14 +319,14 @@ The results for all five material under all three levels are documented in the t
 | [taskD-D3-wood](https://claude.ai/share/4c467950-7b6a-4b7f-a422-4eca343c7f5e)    | scratch   | good                | Not Defective | 72         | The surface shows consistent oak grain and pore streaks with a single straight vertical board seam, and no localized discoloration, hole, liquid stain, or cross-cutting scratch is visible.                                                                         | (same as taskD-D2-wood)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Claude Opus 5.5 (Medium effort) | 2026-10-06 |
 
 The images used for D1 - D3 are as follows:
-![alt text](taskd_query_images.png)
+![alt text](student_files/taskd_query_images.png)
 
 The validation support images used in D3 to identify the images are shown below as well:
-![alt text](taskd_carpet_validation.png)
-![alt text](taskd_grid_validation.png)
-![alt text](taskd_leather_validation.png)
-![alt text](taskd_tile_validation.png)
-![alt text](taskd_wood_validation.png)
+![alt text](student_files/taskd_carpet_validation.png)
+![alt text](student_files/taskd_grid_validation.png)
+![alt text](student_files/taskd_leather_validation.png)
+![alt text](student_files/taskd_tile_validation.png)
+![alt text](student_files/taskd_wood_validation.png)
 
 #### Analysis
 
@@ -348,7 +348,7 @@ For D1, 4/5 of the labels violated the allowed vocabulary but no vocabulary viol
 
 The confidence for correct, incorrect predictions are shown in the diagram below. For D1, lenient labels, labels that accurately identitfy the defect but uses additional vocabulary are identified too:
 
-![alt text](taskd_confidence_by_condition.png)
+![alt text](student_files/taskd_confidence_by_condition.png)
 
 From the above diagram, the confidence levels are exact predictions are higher compared to incorrect predictions. This might be because of the overconfidence of LLMs, where in one study, it was recorded that LLMs overestimate the probability that their answer is correct between 20% and 60% (Sun et. al, 2025). With examples and defintions, LLMs have a source of reference and hence lower its confidence when their initial belief deviates from the facts provided.
 
