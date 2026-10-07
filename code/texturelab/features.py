@@ -69,17 +69,17 @@ def extract_local_features(image: np.ndarray, config: FeatureConfig) -> tuple[np
         edge_density = box_mean(edge["edges"].astype(np.float32), config.edge.density_size)
         chunks.append(edge_density[..., np.newaxis])
         names.append("edge_density")
-    directions_mod = edge["direction"] % np.pi
-    n_bins = config.edge.n_orientations
-    bin_width = np.pi / n_bins
-    for i in range(n_bins):
-        low_angle = i * bin_width
-        high_angle = (i + 1) * bin_width
-        in_bin = (directions_mod >= low_angle) & (directions_mod < high_angle)
-        masked = edge["edges"] & in_bin
-        pooled_bin = box_mean(masked.astype(np.float32), config.edge.density_size)
-        chunks.append(pooled_bin[..., np.newaxis])
-        names.append(f"edge_orientation_{i}")
+        directions_mod = edge["direction"] % np.pi
+        n_bins = config.edge.n_orientations
+        bin_width = np.pi / n_bins
+        for i in range(n_bins):
+            low_angle = i * bin_width
+            high_angle = (i + 1) * bin_width
+            in_bin = (directions_mod >= low_angle) & (directions_mod < high_angle)
+            masked = edge["edges"] & in_bin
+            pooled_bin = box_mean(masked.astype(np.float32), config.edge.density_size)
+            chunks.append(pooled_bin[..., np.newaxis])
+            names.append(f"edge_orientation_{i}")
 
     # TODO 6 — Assemble and optionally standardise
     #   - Reject a configuration with no enabled feature family.
