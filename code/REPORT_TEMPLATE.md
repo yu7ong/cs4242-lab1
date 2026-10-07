@@ -1,4 +1,4 @@
-## Gabor Implementation
+## Gabor Implementation [Human Data]
 
 `make_gabor_bank`
 Creates a collection of Gabor filters using the setting in config file. For every combination of frequency, orientation and phase, it creates a Gabor kernel. Each kernel is then made zero-mean and normalized to unit norm. The function also stores the frequency, orientation and phase of each kernel as metadata.
@@ -6,7 +6,7 @@ Creates a collection of Gabor filters using the setting in config file. For ever
 `gabor_energy_maps`
 Applies each Gabor filter to the grayscale image and converts its response into an energy map using either squared or absolute response. Pooling is used on the energy maps to produce more stable texture representations. The resulting maps are stacked into an H × W × K feature map, with one channel for each Gabor filter.
 
-## Edge Implementation
+## Edge Implementation  [Human Data]
 
 `bilinear_sample`
 Finds the pixel value at a coordinate that fall between pixels based on the four nearest pixels, through weighing how close the point is to each of the four pixels.
@@ -20,7 +20,7 @@ Decides what count as strong edge and what counts as week edge. Instead of picki
 `hysteresis`
 Connects broken edge lines. It starts at every strong edge pixel, then picks the neighbouring weak pixels, by checking either 4 or 8 neighbouring directions. If a weak pixel is connected to a strong one, keep it. Any weak pixel that isn't connected to a strong pixel gets thrown away.
 
-## Features and Representations
+## Features and Representations []
 
 `extract local features`
 Extracts different types of visual information from an image and puts them into one feature map. It normalizes the image and converts to gray scale, extracts selected features, color, gabor features, gradient energy, edge density and edge orientation, then combine all features into one H × W × D feature map.
@@ -292,8 +292,25 @@ However, global pooling removes spatial information, so location of features or 
 
 ### Part 1 - Personal Photo Investigations
 
+#### Passport Images
+
+Here are some sample passport images from every material collected (carpet, leather, tile and wood). The rest of the passport photos are found under student files > passports folder.
+
+![alt text](student_files/passports/passport_carpet_01.png)
+
+![alt text](student_files/passports/passport_leather_01.png)
+
+![alt text](student_files/passports/passport_tile_01.png)
+
+![alt text](student_files/passports/passport_wood_01.png)
+
 #### Confidence Against Anomaly Score
+
 From our investigation, we found out that the confidence is unable to accurately identify the anomalies.
+
+![alt text](student_files\anamoly-against-confidence.png)
+
+The above diagram plots material confidence against anomaly score (anomaly score = log(image_score)), while identifying correct and incorrect predictions. If confidence were a useful warning signal, the wrong predictions (orange crosses) would cluster at low confidence and the correct ones (blue circles) at high confidence (Hendrycks & Gimpel, 2017). While correct predictions tend to cluster at higher confidence levels (mean: 0.83), incorrect predictions tend to be spread more evenly across the confidence range (0.34–0.99). Moreover, confidence scores have little correlation with identifying a defect (Spearman ρ = −0.15, p = 0.42). For instance, carpet_07 has the highest anomaly score but was misclassified at 0.77 confidence. Hence, confidence alone is not a reliable indicator of the model's accuracy.
 
 ### Part 2 - VLM defect classification
 
@@ -322,9 +339,11 @@ The results for all five material under all three levels are documented in the t
 | [taskD-D3-wood](https://claude.ai/share/4c467950-7b6a-4b7f-a422-4eca343c7f5e)    | scratch   | good                | Not Defective | 72         | The surface shows consistent oak grain and pore streaks with a single straight vertical board seam, and no localized discoloration, hole, liquid stain, or cross-cutting scratch is visible.                                                                         | (same as taskD-D2-wood)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Claude Opus 5.5 (Medium effort) | 2026-10-06 |
 
 The images used for D1 - D3 are as follows:
+
 ![alt text](student_files/taskd_query_images.png)
 
 The validation support images used in D3 to identify the images are shown below as well:
+
 ![alt text](student_files/taskd_carpet_validation.png)
 ![alt text](student_files/taskd_grid_validation.png)
 ![alt text](student_files/taskd_leather_validation.png)
@@ -414,3 +433,5 @@ In this section, three changes were made: paraphrasing the description of each l
 #### Prior Exposure
 
 Since MVTec AD has been publicly available since 2019, and Claude Opus 5.5 was trained on data up to June 2026, it is likely that the dataset was included in the model's training data. This may explain why, in D1, the generated labels closely resemble those in the MVTec AD dataset, despite no predefined labels being provided.
+
+### References
