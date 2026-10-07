@@ -292,6 +292,9 @@ However, global pooling removes spatial information, so location of features or 
 
 ### Part 1 - Personal Photo Investigations
 
+#### Confidence Against Anomaly Score
+From our investigation, we found out that the confidence is unable to accurately identify the anomalies.
+
 ### Part 2 - VLM defect classification
 
 #### Overall Results
