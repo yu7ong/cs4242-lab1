@@ -1,5 +1,7 @@
 """Small serialisable configurations used by every branch."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 
