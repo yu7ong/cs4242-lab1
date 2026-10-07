@@ -1,4 +1,4 @@
-By Han Zixuan Nancy (a0281489M) and Li Yutong (A0283296R)
+By Han Zixuan Nancy (A0281489M) and Li Yutong (A0283296R)
 
 ## Gabor Implementation 
 
