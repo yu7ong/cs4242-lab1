@@ -153,48 +153,67 @@ The confident error idx=58 is a good grid image predicted as carpet with confide
 
 ### Task B
 
-In task B, one normal model is fitted per material on training images only. Pixels thresholds are then selected on validation masks only per configuration. It would lastly freeze the selected threshold before scoig and evaluating the test split. 
+In task B, one normal model is fitted per material on training images only. Pixels thresholds are then selected on validation masks only per configuration. It would lastly freeze the selected threshold before scoig and evaluating the test split.
 
 #### Comparison of Gabor, Edge only and Combined Maps
+
 | Configuration | Threshold | Image AUROC | Pixel F1 | Pixel IoU |
-|---|---|---|---|---|
-| Gabor only | 4.8237 | 0.694 | 0.167 | 0.091 |
-| Edge only | 3.0666 | 0.636 | 0.162 | 0.088 |
-| Combined | 3.4016 | 0.662 | 0.168 | 0.092 |
+| ------------- | --------- | ----------- | -------- | --------- |
+| Gabor only    | 4.8237    | 0.694       | 0.167    | 0.091     |
+| Edge only     | 3.0666    | 0.636       | 0.162    | 0.088     |
+| Combined      | 3.4016    | 0.662       | 0.168    | 0.092     |
 
 Gabor gives the best image-level detection (0.694), followed by combined (0.662) and edge (0.636). This might suggest that the edge map adds more noise than new information. In `features.py`, the combined configuration concatenates 3 colour, 4 Gabor and 6 edge channels. In `normality.py`, all channels are scored together using the root-mean-square of the per-channel z-scores. As a result, strong Gabor responses to a defect are averaged with mostly normal edge and colour responses, which reduces the defect contrast and makes it harder to separate defective from normal pixels. Since AUROC shows whether the model can identify defective images from normal ones, it makes sense that Gabor has the highest image AUROC and edge has the lowest.
 
-There is no significant difference in pixel level localisation (pixel F1 and pixel IoU), which is very weak overall. This might be due to the high sigma (sigma = 3) over a 9x9 window. While smoothing may help in image detection (and possibly material defects) by supressing noise, it blurs precise pixel boundaries and hence results in low pixel level localisation. Nonetheless, combined maps performed the best for pixel level localisation. 
+There is no significant difference in pixel level localisation (pixel F1 and pixel IoU), which is very weak overall. This might be due to the high sigma (sigma = 3) over a 9x9 window. While smoothing may help in image detection (and possibly material defects) by supressing noise, it blurs precise pixel boundaries and hence results in low pixel level localisation. Nonetheless, combined maps performed the best for pixel level localisation.
 
 #### IoU and F1 for each defect
-Using the combined configuration with a threshold of 3.4016, the IoU and F1 results are shown in the table below. Good images without defects are left out as there are no defect pixels.  
 
-| Defect | Material(s) | Pixel F1 | Pixel IoU |
-|---|---|---|---|
-| scratch | wood | 0.583 | 0.412 |
-| liquid | wood | 0.530 | 0.360 |
-| combined | wood | 0.314 | 0.186 |
-| color | carpet / leather / wood | 0.307 | 0.181 |
-| fold | leather | 0.207 | 0.115 |
-| glue | leather / grid | 0.196 | 0.109 |
-| hole | carpet / wood | 0.134 | 0.072 |
-| thread | carpet / grid | 0.087 | 0.045 |
-| cut | carpet / leather | 0.064 | 0.033 |
-| poke | leather | 0.027 | 0.014 |
-| rough | tile | 0.018 | 0.009 |
-| glue_strip | tile | 0.002 | 0.001 |
-| metal_contamination | carpet / grid | 0.000 | 0.000 |
-| bent | grid | 0.000 | 0.000 |
-| broken | grid | 0.000 | 0.000 |
-| crack | tile | 0.000 | 0.000 |
-| gray_stroke | tile | 0.000 | 0.000 |
-| oil | tile | 0.000 | 0.000 |
-| **Overall** | all | **0.168** | **0.092** |
+Using the combined configuration with a threshold of 3.4016, the IoU and F1 results are shown in the table below. Good images without defects are left out as there are no defect pixels.
 
+| Defect              | Material(s)             | Pixel F1  | Pixel IoU |
+| ------------------- | ----------------------- | --------- | --------- |
+| scratch             | wood                    | 0.583     | 0.412     |
+| liquid              | wood                    | 0.530     | 0.360     |
+| combined            | wood                    | 0.314     | 0.186     |
+| color               | carpet / leather / wood | 0.307     | 0.181     |
+| fold                | leather                 | 0.207     | 0.115     |
+| glue                | leather / grid          | 0.196     | 0.109     |
+| hole                | carpet / wood           | 0.134     | 0.072     |
+| thread              | carpet / grid           | 0.087     | 0.045     |
+| cut                 | carpet / leather        | 0.064     | 0.033     |
+| poke                | leather                 | 0.027     | 0.014     |
+| rough               | tile                    | 0.018     | 0.009     |
+| glue_strip          | tile                    | 0.002     | 0.001     |
+| metal_contamination | carpet / grid           | 0.000     | 0.000     |
+| bent                | grid                    | 0.000     | 0.000     |
+| broken              | grid                    | 0.000     | 0.000     |
+| crack               | tile                    | 0.000     | 0.000     |
+| gray_stroke         | tile                    | 0.000     | 0.000     |
+| oil                 | tile                    | 0.000     | 0.000     |
+| **Overall**         | all                     | **0.168** | **0.092** |
 
-#### Question 5: Identify one failure caused by image borders, registration, or illumination. How would the image score and mask change if the aggregation percentile or mask threshold were increased?
+Likely connected edges: scratch, crack, cut, fold, thread, broken, bent. Thin edges are likely blurred away by the pooling (Gabor pool 7, edge density 9, score pool 7), and the strong regular pattern on tile and grid hides them.
 
+Likely colour or diffuse texture: color, liquid, oil, glue, glue_strip, gray_stroke, rough, metal_contamination. Liquid and color do well because they are large, high-contrast regions, which suits the smoothed map. Oil, gray_stroke and rough (tile) score lowers as they are low-contrast against an already busy texture.
 
+![alt text](connected-edges.png)
+
+![alt text](color-defects.png)
+
+The above two images show the defects with the largest edge ratio and colour shift, which shows the most likely connected edges and most likely colour or diffuse textures respectively.
+
+#### Question 5:
+
+One failure caused by image borders is that the model performs badly along image edges. Removing a 5-pixel border from a 64×64 material image discards about 29% of the image, as a 54×54 region remains. The discarded region may contain information that is essential for identifying a defect, especially when the defect lies near the image edges.
+
+![alt text](border-failure.png)
+
+This is shown in the image above, where the defect goes undetected when the borders are removed, since the most significant portion of the crack appears to be in the border.
+
+The aggregation percentile maps pixel scores into one number per image. It takes a predefined percentile of the pixel scores within the scored area. As the percentile increases, the image score is based on fewer, higher-scoring pixels. This is good for image-level detection of smaller defects, but it also gives high scores to bright lighting spots. However, it is lenient on bright lighting spots, which tend to give higher scores.
+
+By raising the mask threshold, fewer pixels pass the threshold, so the mask gets smaller. Pixels where the score >= threshold are marked as defects. This is good for preventing irrelevant detection of minor defects, but it could miss real defects, especially faint ones such as threads and cuts.
 
 ### Task C
 
