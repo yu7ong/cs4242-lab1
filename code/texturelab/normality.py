@@ -9,6 +9,7 @@ from .supplied import box_mean
 
 @dataclass
 class NormalModel:
+    # Store the fitted normal model statistics and threshold. [AI-Code] [Human-Check]
     mean: np.ndarray
     std: np.ndarray
     threshold: float
@@ -24,7 +25,7 @@ def _scores(
 
 
 def _pool_score(score: np.ndarray, config: NormalityConfig) -> np.ndarray:
-    """Suppress isolated patch responses while preserving coherent anomalies."""
+    """Suppress isolated patch responses while preserving coherent anomalies. [AI-Code] [Human-Check]"""
     if config.score_pool_size < 1 or config.score_pool_size % 2 == 0:
         raise ValueError("score_pool_size must be a positive odd integer")
     return box_mean(score, config.score_pool_size).astype(np.float32)
@@ -40,10 +41,8 @@ def _interior(score: np.ndarray, border: int) -> np.ndarray:
 
 def fit_normal_model(feature_maps: list[np.ndarray] | np.ndarray, config: NormalityConfig,
                      feature_names: list[str] | None = None) -> NormalModel:
-    """Fit normal feature statistics using normal training maps only."""
-    # TODO 1 — Normalise and validate the collection
-    #   - Accept either one H x W x D array or a non-empty collection of maps.
-    #   - Reject an empty collection; preserve the common feature dimension.
+    """Fit normal feature statistics using normal training maps only. [AI-Code] [Human-Check]"""
+    
     maps = [feature_maps] if isinstance(feature_maps, np.ndarray) else list(feature_maps)
     if not maps:
         raise ValueError("feature_maps must be a non-empty collection")
@@ -52,26 +51,17 @@ def fit_normal_model(feature_maps: list[np.ndarray] | np.ndarray, config: Normal
     if any(m.shape[-1] != n_features for m in maps):
         raise ValueError("all feature maps must share the same feature dimension")
 
-    # TODO 2 — Build the normal patch sample
-    #   - Flatten each map to (H*W) x D and concatenate across training images.
-    #   - If there are more than config.max_samples rows, select exactly that
-    #     many without replacement using config.random_seed.
     samples = np.concatenate([m.reshape(-1, n_features) for m in maps], axis=0)
     if samples.shape[0] > config.max_samples:
         rng = np.random.default_rng(config.random_seed)
         indices = rng.choice(samples.shape[0], size=config.max_samples, replace=False)
         samples = samples[indices]
 
-    # TODO 3 — Fit diagonal normal statistics
-    #   - Compute a D-vector mean and population standard deviation.
+
     mean = samples.mean(axis=0)
     std = samples.std(axis=0)
 
-    # TODO 4 — Estimate a normal-only provisional threshold
-    #   - Score every original map with _scores, smooth it with _pool_score, crop
-    #     the configured unreliable border with _interior, then concatenate.
-    #   - Use config.mask_threshold when explicitly supplied; otherwise take
-    #     config.threshold_percentile of the pooled interior normal scores.
+
     if config.mask_threshold is not None:
         threshold = config.mask_threshold
     else:
@@ -82,8 +72,6 @@ def fit_normal_model(feature_maps: list[np.ndarray] | np.ndarray, config: Normal
         normal_scores = np.concatenate([s.reshape(-1) for s in pooled_scores])
         threshold = np.percentile(normal_scores, config.threshold_percentile)
 
-    # TODO 5 — Return the model
-    #   - Store float32 mean/std, a Python-float threshold, and feature_names.
 
     return NormalModel(
         mean=mean.astype(np.float32),
@@ -95,28 +83,18 @@ def fit_normal_model(feature_maps: list[np.ndarray] | np.ndarray, config: Normal
 
 def predict_anomaly(feature_map: np.ndarray, model: NormalModel, config: NormalityConfig
                     ) -> tuple[np.ndarray, float, np.ndarray]:
-    """Return dense score, image-level score, and predicted mask."""
-    # TODO 1 — Validate feature compatibility
-    #   - The final feature dimension must equal the fitted model mean length.
+    """Return dense score, image-level score, and predicted mask. [AI-Code] [Human-Check]"""
+
     if feature_map.shape[-1] != model.mean.shape[-1]:
         raise ValueError("feature_map's feature dimension does not match the fitted model")
 
-    # TODO 2 — Compute the dense anomaly score
-    #   - Use _scores for RMS standardized distance with config.epsilon.
-    #   - Smooth coherent evidence with _pool_score.
     raw_score = _scores(feature_map, model.mean, model.std, config.epsilon)
     score = _pool_score(raw_score, config)
 
-    # TODO 3 — Aggregate an image-level score
-    #   - Crop the unreliable border with _interior and take
-    #     config.image_percentile over that interior only.
+
     interior_score = _interior(score, config.ignore_border)
     image_score = np.percentile(interior_score, config.image_percentile)
 
-    # TODO 4 — Produce the binary localization mask
-    #   - Threshold the full score map at model.threshold.
-    #   - Force the configured outer border to False without altering scores.
-    #   - Return (float32 score map, Python-float image score, Boolean mask).
     mask = score >= model.threshold
     border = config.ignore_border
     if border > 0:
@@ -130,12 +108,8 @@ def predict_anomaly(feature_map: np.ndarray, model: NormalModel, config: Normali
 
 def select_mask_threshold(score_maps: list[np.ndarray], masks: list[np.ndarray],
                           candidates: int = 80) -> float:
-    """Choose the pixel-F1-optimal threshold on public validation only."""
-    # TODO 1 — Validate the validation inputs
-    #   - Require matching non-empty score/mask collections and candidates >= 2.
-    #   - Convert scores to float and masks to bool; require matching shapes and
-    #     finite scores for every pair.
-    #   - Callers handle border cropping, so do not crop again here.
+    """Choose the pixel-F1-optimal threshold on public validation only. [AI-Code] [Human-Check]"""
+
     if not score_maps or not masks:
         raise ValueError("score_maps and masks must be non-empty")
     if len(score_maps) != len(masks):
@@ -155,20 +129,13 @@ def select_mask_threshold(score_maps: list[np.ndarray], masks: list[np.ndarray],
         scores.append(s)
         bool_masks.append(m)
 
-    # TODO 2 — Build candidate thresholds
-    #   - Flatten and concatenate all validation pixels.
-    #   - Use evenly spaced quantile levels from 0.5 through 0.999.
+
     flat_scores = np.concatenate([s.reshape(-1) for s in scores])
     flat_masks = np.concatenate([m.reshape(-1) for m in bool_masks])
     quantile_levels = np.linspace(0.5, 0.999, candidates)
     thresholds = np.quantile(flat_scores, quantile_levels)
 
-    # TODO 3 — Select by pixel F1
-    #   - For each threshold, predict score >= threshold and compute TP/FP/FN.
-    #   - Use 2*TP / max(1, 2*TP + FP + FN) to avoid division by zero.
-    #   - Keep the threshold with the greatest F1; deterministic ties should
-    #     retain the first encountered candidate.
-    #   - Return the selected threshold as a Python float.
+
     best_f1 = -1.0
     best_threshold = float(thresholds[0])
     for threshold in thresholds:

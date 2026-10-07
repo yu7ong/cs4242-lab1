@@ -8,7 +8,7 @@ from .supplied import box_mean, correlate2d
 
 
 def make_gabor_bank(config: GaborConfig) -> list[tuple[np.ndarray, dict]]:
-    """Return ordered zero-mean, unit-norm kernels and their metadata."""
+    """Return ordered zero-mean, unit-norm kernels and their metadata. [AI-Code] [Human-Check]"""
 
     if config.kernel_size % 2 == 0 or config.kernel_size < 3:
         raise ValueError("kernel_size must be odd and at least 3")
@@ -44,7 +44,7 @@ def make_gabor_bank(config: GaborConfig) -> list[tuple[np.ndarray, dict]]:
 
 def gabor_energy_maps(gray: np.ndarray, bank: list[tuple[np.ndarray, dict]], pool_size: int = 9,
                       energy: str = "squared") -> np.ndarray:
-    """Return finite H x W x K locally pooled energy maps."""
+    """Return finite H x W x K locally pooled energy maps. [AI-Code] [Human-Check]"""
 
     channels = []
     for kernel, _ in bank:
