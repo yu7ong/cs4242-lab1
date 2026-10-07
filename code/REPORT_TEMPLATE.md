@@ -6,7 +6,7 @@ Creates a collection of Gabor filters using the setting in config file. For ever
 `gabor_energy_maps`
 Applies each Gabor filter to the grayscale image and converts its response into an energy map using either squared or absolute response. Pooling is used on the energy maps to produce more stable texture representations. The resulting maps are stacked into an H × W × K feature map, with one channel for each Gabor filter.
 
-[Human Data] [Human-Check]
+[Human-Data] [Human-Check]
 
 ## Edge Implementation
 
@@ -22,11 +22,14 @@ Decides what count as strong edge and what counts as week edge. Instead of picki
 `hysteresis`
 Connects broken edge lines. It starts at every strong edge pixel, then picks the neighbouring weak pixels, by checking either 4 or 8 neighbouring directions. If a weak pixel is connected to a strong one, keep it. Any weak pixel that isn't connected to a strong pixel gets thrown away.
 
-[Human Data] [Human-Check]
+`detect_edges`
+Runs the full edge pipeline. It applies the supplied Gaussian smoothing and Sobel gradients, thins the gradient magnitude with `nms_interpolated`, computes the low and high cutoffs with `adaptive_thresholds`, splits the NMS response into strong (≥ high) and weak (between low and high) pixels, and links them with `hysteresis`. It returns every intermediate map (gx, gy, magnitude, direction, nms), the two thresholds and the final binary edge map, so each stage can be visualised in Notebook 1.
+
+[Human-Data] [Human-Check]
 
 ## Features and Representations
 
-`extract local features`
+`extract_local_features`
 Extracts different types of visual information from an image and puts them into one feature map. It normalizes the image and converts to gray scale, extracts selected features, color, gabor features, gradient energy, edge density and edge orientation, then combine all features into one H × W × D feature map.
 
 `global_pool`
@@ -35,7 +38,7 @@ Converts the local feature map into a one fixed-length vector. It flattens the s
 `feature_family_indices`
 Groups feature channels according to their type, such as colour, Gabor, gradient and edge families. It returns the indices belonging to each type in the vector.
 
-[Human Data] [Human-Check]
+[Human-Data] [Human-Check]
 
 ## Normality Model
 
@@ -57,7 +60,7 @@ Smooths a score map with a box filter to supress isolated noisy patch responses 
 `_score`
 Computes a per-location anomaly score by standardizing each feature against the model's mean and standard deviation, before taking the root mean square across the feature dimension. It returns a float32 score map.
 
-[Human Data] [Human-Check]
+[Human-Data] [Human-Check]
 
 ## Results and Analysis Task A-C
 
@@ -67,7 +70,7 @@ Frequency determines the how tightly spaced the sine wave inside the kernel, hig
 
 Case where large pooling increases stability: Carpet texture, since no two adjacent tufts will be identical even though the overall texture will be uniform. A large pooling window averages the noise away, giving a smooth and stable energy value.
 For the same filter kernel, when pool_size=3, there are lots of small and high-contrast bright blobs scattered everywhere. When pool_size=15, those same small blobs have merged into broader, lower-contrast regions.
-[Human Data] [Human-Check]
+[Human-Data] [Human-Check]
 
 ![Pool size= 3 vs Pool size=15 Plot](student_files/pool_size_comparison_1.png)
 
@@ -75,7 +78,7 @@ For the same filter kernel, when pool_size=3, there are lots of small and high-c
 
 
 Case when large pooling erases small features: Color defect on wood texture. If the pooling window is much larger than the scratch, then the scratch's energy will be diluted with surrounding pixels.
-For the defect centre marked with x, at pool_size=3, the Gabor-energy map shows a clear, localized bright spot. Whereas at pool_size=21, defect's response has been diluted by the box filter. [Human Data] [Human-Check]
+For the defect centre marked with x, at pool_size=3, the Gabor-energy map shows a clear, localized bright spot. Whereas at pool_size=21, defect's response has been diluted by the box filter. [Human-Data] [Human-Check]
 
 ![Pool size= 3 vs Pool size=21 Plot](student_files/pool_size_comparison_2.png)
 
@@ -472,4 +475,38 @@ Since MVTec AD has been publicly available since 2019, and Claude Opus 5.5 was t
 Hendrycks, Dan & Gimpel, Kevin. (2016). A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks. 10.48550/arXiv.1610.02136. 
 
 Sun, Fengfei & Li, Ningke & Wang, Kailong & Goette, Lorenz. (2025). Large Language Models are overconfident and amplify human bias. 10.48550/arXiv.2505.02151. 
+
+### Report Traceability Table
+
+| Student file | Required sections | Minimum evidence location (report discussion) | Notebook evidence (figure / table / numerical result) |
+| ------------ | ----------------- | --------------------------------------------- | ----------------------------------------------------- |
+| `gabor_branch.py` | `make_gabor_bank`, `gabor_energy_maps` | *Gabor Implementation* (both functions described); *Question 1* (frequency, orientation, phase and pool-size discussion) with the figures "Comparison of Gabor energy maps using pool sizes 3 and 15 for carpet texture" and "… pool sizes 3 and 21 for wood texture with color defect" | **Notebook 1**, §3 "Build and inspect the Gabor bank": kernel grid, printed `kernels: 12`, `maximum \|mean\|: 1.06e-09` (zero-mean check); §4 "Local response-energy maps" and "Summarise orientation selectivity" figures; "Additional Code for Report" cells producing `pool_size_comparison_1.png` / `pool_size_comparison_2.png` |
+| `edge_branch.py` | `bilinear_sample`, `nms_interpolated`, `adaptive_thresholds`, `hysteresis`, `detect_edges` | *Edge Implementation* (all five functions described); *Question 2* with figures "Nearest_direction NMS and Interpolated NMS for grid texture", "Retained positive response distribution for grid texture" (interpolated NMS retains more pixels, esp. 0.06–0.09) and "8-Connectivity and 4-Connectivity for grid texture" | **Notebook 1**, §5 "Follow the edge detector stage by stage" (smoothing/Sobel, nearest-direction vs interpolated NMS, hysteresis edges from `detect_edges`); "Where does interpolated NMS differ?" signed-difference image and retained-response histogram (`nms_comparison_1.png`, `nms_comparison_2.png`, `8_4_connectivity_comparison.png`); **Notebook 2**, "Inspect a connected-edge defect vs a colour / diffuse defect" (`detect_edges` on wood scratch vs liquid) |
+| `features.py` | `extract_local_features`, `global_pool`, `feature_family_indices` | *Features and Representations* (all three functions described); *Question 3* (channel scales, figure "Feature Channel Scale Comparison"); *Task A* (descriptor built with `extract_local_features` + `global_pool`; accuracy 0.940, macro-F1 0.929, Confusion Matrix, Confidence Histogram, Reliability Diagram); *Task B* ablation table (Gabor / Edge / Combined); *Task C* "Average Precision by Feature Family" table and *Question 6* | **Notebook 1**, §6 "Assemble and audit the shared local descriptor": printed `input: (96, 96, 3) features: (96, 96, 21) named channels: 21 finite: True` and "Compare feature-channel scales" figure; **Notebook 2**, §3 Task A descriptor/PCA cells and confusion-matrix / confidence figures; §7 feature-family ablation; **Notebook 3**, §3 "Extract the shared handcrafted representation" (`extract_local_features` + `global_pool`), §5 per-attribute AP/F1 table, and the feature-family ablation cell using `feature_family_indices` (e.g. Edge AP 0.577 for banded, Gabor AP 0.603 for striped) |
+| `normality.py` | `fit_normal_model`, `predict_anomaly`, `select_mask_threshold` | *Normality Model* (all three functions plus helpers `_interior`, `_pool_score`, `_score` described); *Task B* tables "Comparison of Gabor, Edge only and Combined Maps" (combined threshold 3.4016, AUROC 0.662, pixel F1 0.168, IoU 0.092) and "IoU and F1 for each defect"; *Question 5* border-failure figure and discussion of aggregation percentile and mask threshold | **Notebook 2**, §4 "Task B – fit normal patch models" (`fit_normal_model` per material); §5 "Tune the mask threshold on validation only" printed `Validation-selected pixel threshold: 3.4016` and validation diagnostic plot; §6 frozen test results (`image_auroc` 0.662 and per-defect F1/IoU dictionary); §7 ablation output (Gabor 4.8237 / 0.694, Edge 3.0666 / 0.636, Combined 3.4016 / 0.662); "Question 5 – border failure" cell using `predict_anomaly` (`border-failure.png`) |
+
+[AI-Design] [Human-Check]
+
+### AI disclosure table
+
+Marker key: **[AI-Code]** AI wrote or substantially drafted code; **[AI-Design]** AI laid out a table, figure or report structure; **[AI-Vision]** AI helped describe what is visible in an image or figure; **[Human-Data]** the analysis, numbers and wording are the students' own; **[Human-Check]** a student checked the AI output before it was used. Text marked only [Human-Data] [Human-Check] was written by the students without AI drafting.
+
+| # | Tool / model | Affected artefacts (exact location) | Markers | What the tool contributed | How the students verified it |
+| - | ------------ | ----------------------------------- | ------- | ------------------------- | ---------------------------- |
+| 1 | Claude Code (Claude Opus 5.5) | `texturelab/gabor_branch.py`: `make_gabor_bank`, `gabor_energy_maps` | [AI-Code] [Human-Check] | Drafted the kernel-bank loop (zero-mean, unit-norm, metadata) and the energy + box-pool implementation. | Ran `tests/test_gabor.py`; checked the Notebook 1 §3 printout (`kernels: 12`, `maximum \|mean\|: 1.06e-09`) and the §4 energy-map figures against the expected orientation selectivity. |
+| 2 | Claude Code (Claude Opus 5.5) | `texturelab/edge_branch.py`: `bilinear_sample`, `nms_interpolated`, `adaptive_thresholds`, `hysteresis`, `detect_edges` | [AI-Code] [Human-Check] | Drafted the bilinear interpolation, interpolated NMS, percentile/median thresholds, 4/8-connected hysteresis and the full pipeline wrapper. | Ran `tests/test_edges.py`; inspected each stage in Notebook 1 §5 (smoothing → Sobel → NMS → hysteresis) and compared interpolated against the supplied `nms_nearest`. |
+| 3 | Claude Code (Claude Opus 5.5) | `texturelab/features.py`: `extract_local_features`, `global_pool`, `feature_family_indices` | [AI-Code] [Human-Check] | Drafted channel assembly (colour, Gabor, gradient, edge), the mean/std/p90 pooling and the family-index grouping. | Ran `tests/test_features_normality.py`; confirmed the Notebook 1 §6 printout (`features: (96, 96, 21)`, `named channels: 21`, `finite: True`) and the channel-scale figure. |
+| 4 | Claude Code (Claude Opus 5.5) | `texturelab/normality.py`: `NormalModel`, `_pool_score`, `fit_normal_model`, `predict_anomaly`, `select_mask_threshold` | [AI-Code] [Human-Check] | Drafted the diagonal-Gaussian fit, z-score RMS scoring, border cropping, box-filter pooling and the validation-only F1 threshold search. | Ran `tests/test_features_normality.py` and `tests/test_evaluation.py`; checked that only validation masks reach `select_mask_threshold` (Notebook 2 §5, threshold 3.4016) and that the test split is used only after the threshold is frozen. |
+| 5 | Claude Code (Claude Opus 5.5) | Notebook 1, "Additional Code for Report" cells → `student_files/pool_size_comparison_1.png`, `pool_size_comparison_2.png`, `nms_comparison_1.png`, `nms_comparison_2.png`, `8_4_connectivity_comparison.png`; report *Question 1* and *Question 2* figures | [AI-Code] [AI-Vision] [Human-Check] | Wrote the plotting code for the pool-size, NMS and connectivity comparisons, and suggested descriptions of the visible differences. | Re-ran the cells and compared each figure with the report text by eye (blob merging at pool 15/21, ring fragmentation, 4- vs 8-connectivity gaps). The written explanations are the students' own [Human-Data]. |
+| 6 | Claude Code (Claude Opus 5.5) | Notebook 2, "Extra Code Created For Report" cells (confidence histograms, misclassification list, `compare_error(58)`) → `taskA_confidence_histograms.png`, `taskA_error1.png`, `taskA_error2.png`, `taskA_highconfidence_error.png` | [AI-Code] [Human-Check] | Wrote code to split confidence by correct/wrong and good/defective, list errors, and plot response maps for an error next to correct references. | Cross-checked the printed error indices and confidences (e.g. idx=58, grid→carpet, conf 1.00) against the confusion matrix and against accuracy 0.940 / macro-F1 0.929. |
+| 7 | Claude Code (Claude Opus 5.5) | Notebook 2, connected-edge vs colour defect cell (`inspect_defect`) and §7 `run_task_b` ablation cell; report Task B tables "Comparison of Gabor, Edge only and Combined Maps" and "IoU and F1 for each defect"; `connected-edges.png`, `color-defects.png` | [AI-Code] [AI-Design] [AI-Vision] [Human-Check] | Wrote the per-configuration fit → validation threshold → frozen test loop, plus the edge-ratio / colour-shift inspection; laid out the two Task B tables. | Confirmed that each configuration selects its own threshold on validation only; copied the table values directly from the printed notebook output (Gabor 4.8237 / 0.694, Edge 3.0666 / 0.636, Combined 3.4016 / 0.662) and the per-defect report dictionary. |
+| 8 | Claude Code (Claude Opus 5.5) | Notebook 2, "(Additional Cells) Question 5 — border failure" → `border-failure.png`; report *Question 5* | [AI-Code] [AI-Vision] [Human-Check] | Wrote the code that picks the tile crack with the most pixels in the ignored strip and plots score/mask with and without the border; described the visible effect. | Checked the printed strip fraction (≈29% of a 64×64 image) by hand (1 − 54²/64²) and confirmed in the figure that the crack lies mostly in the strip. |
+| 9 | Claude Code (Claude Opus 5.5) | Notebook 3, the `# YOUR CODE HERE` cells (feature extraction config, PCA, `fit_attribute_classifier`, AP/F1 table), probability heatmap cell and feature-family ablation cell; report Task C results table, "Average Precision by Feature Family" table, `taskC_probability_heatmap.png`, `taskC_example1–3.png` | [AI-Code] [AI-Design] [AI-Vision] [Human-Check] | Wrote the Task C pipeline cells, the heatmap and the per-family AP ablation; laid out the tables and figures. | Checked that training used DTD split 1 train and evaluation used validation only; matched every AP/F1 value in the report to the notebook output; inspected the three qualitative examples visually. |
+| 10 | Claude Code (Claude Opus 5.5) | Notebook 4 Part I, Texture Passport inference cell and passport plotting cell → `student_files/passports/passport_*.png`, `anamoly-against-confidence.png` | [AI-Code] [AI-Design] [AI-Vision] [Human-Check] | Wrote code that runs the frozen Task A/B/C models on personal photos and renders each passport; laid out the confidence-vs-anomaly scatter. | Confirmed that models are loaded from the saved bundles and not refitted; checked the passports against the photos; recomputed the Spearman correlation (ρ = −0.15, p = 0.42) reported in the text. |
+| 11 | Claude Code (Claude Opus 5.5) | `student_files/plot_taskd_confidence.py`, `plot_taskd_non_determinism.py`, `plot_taskd_sensitivity.py` → `taskd_confidence_by_condition.png` and Task D table images; Notebook 4 "Record predictions" cell; report Task D score table, nondeterminism and prompt-sensitivity tables | [AI-Code] [AI-Design] [AI-Vision] [Human-Check] | Wrote the plotting/table-rendering scripts and the exact/lenient/incorrect classification logic; laid out the Task D tables. | Recounted exact, lenient and out-of-vocabulary labels by hand from the 15 recorded responses; checked the mean confidences (88.4 / 82.4 / 79.2) and standard deviations against the raw values. |
+| 12 | Claude Code (Claude Opus 5.5) | Report *Report Traceability Table* | [AI-Design] [Human-Check] | Proposed the table structure and mapped each student file to the report sections and notebook cells that show it. | Opened each cited notebook section and figure to confirm that it exists and that the quoted numbers match. |
+| 13 | Claude Opus 5.5, Claude Sonnet 5.5, Claude Haiku (claude.ai chat; **system under test, not an assistant**) | Task D D1/D2/D3 predictions, nondeterminism re-runs, prompt-sensitivity variants and model-update rows (all share links in the Task D tables) | — (experimental data) | Produced the VLM defect predictions being evaluated. AI did not take part in scoring them. | Each query was run in a fresh chat and its share link archived. Predictions were frozen before the answer key was used, and labels were scored by the students. |
+| 14 | Claude Code (Claude Opus 5.5) | This AI disclosure table | [AI-Design] [Human-Check] | Compiled the table from the markers in the code, notebooks and report. | Students checked each row against the markers in the files and corrected any inaccurate description. |
+
+### Submission Appendix
 
