@@ -1,4 +1,4 @@
-## Gabor Implementation [Human Data]
+## Gabor Implementation 
 
 `make_gabor_bank`
 Creates a collection of Gabor filters using the setting in config file. For every combination of frequency, orientation and phase, it creates a Gabor kernel. Each kernel is then made zero-mean and normalized to unit norm. The function also stores the frequency, orientation and phase of each kernel as metadata.
@@ -6,7 +6,9 @@ Creates a collection of Gabor filters using the setting in config file. For ever
 `gabor_energy_maps`
 Applies each Gabor filter to the grayscale image and converts its response into an energy map using either squared or absolute response. Pooling is used on the energy maps to produce more stable texture representations. The resulting maps are stacked into an H × W × K feature map, with one channel for each Gabor filter.
 
-## Edge Implementation  [Human Data]
+[Human Data] [Human-Check]
+
+## Edge Implementation
 
 `bilinear_sample`
 Finds the pixel value at a coordinate that fall between pixels based on the four nearest pixels, through weighing how close the point is to each of the four pixels.
@@ -20,7 +22,9 @@ Decides what count as strong edge and what counts as week edge. Instead of picki
 `hysteresis`
 Connects broken edge lines. It starts at every strong edge pixel, then picks the neighbouring weak pixels, by checking either 4 or 8 neighbouring directions. If a weak pixel is connected to a strong one, keep it. Any weak pixel that isn't connected to a strong pixel gets thrown away.
 
-## Features and Representations []
+[Human Data] [Human-Check]
+
+## Features and Representations
 
 `extract local features`
 Extracts different types of visual information from an image and puts them into one feature map. It normalizes the image and converts to gray scale, extracts selected features, color, gabor features, gradient energy, edge density and edge orientation, then combine all features into one H × W × D feature map.
@@ -30,6 +34,8 @@ Converts the local feature map into a one fixed-length vector. It flattens the s
 
 `feature_family_indices`
 Groups feature channels according to their type, such as colour, Gabor, gradient and edge families. It returns the indices belonging to each type in the vector.
+
+[Human Data] [Human-Check]
 
 ## Normality Model
 
@@ -51,6 +57,8 @@ Smooths a score map with a box filter to supress isolated noisy patch responses 
 `_score`
 Computes a per-location anomaly score by standardizing each feature against the model's mean and standard deviation, before taking the root mean square across the feature dimension. It returns a float32 score map.
 
+[Human Data] [Human-Check]
+
 ## Results and Analysis Task A-C
 
 #### Question 1
@@ -59,33 +67,35 @@ Frequency determines the how tightly spaced the sine wave inside the kernel, hig
 
 Case where large pooling increases stability: Carpet texture, since no two adjacent tufts will be identical even though the overall texture will be uniform. A large pooling window averages the noise away, giving a smooth and stable energy value.
 For the same filter kernel, when pool_size=3, there are lots of small and high-contrast bright blobs scattered everywhere. When pool_size=15, those same small blobs have merged into broader, lower-contrast regions.
+[Human Data] [Human-Check]
 
 ![Pool size= 3 vs Pool size=15 Plot](student_files/pool_size_comparison_1.png)
 
-**Figure** Comparison of Gabor energy maps using pool sizes 3 and 15 for carpet texture.
+**Figure** Comparison of Gabor energy maps using pool sizes 3 and 15 for carpet texture.  [AI Vision]
+
 
 Case when large pooling erases small features: Color defect on wood texture. If the pooling window is much larger than the scratch, then the scratch's energy will be diluted with surrounding pixels.
-For the defect centre marked with x, at pool_size=3, the Gabor-energy map shows a clear, localized bright spot. Whereas at pool_size=21, defect's response has been diluted by the box filter.
+For the defect centre marked with x, at pool_size=3, the Gabor-energy map shows a clear, localized bright spot. Whereas at pool_size=21, defect's response has been diluted by the box filter. [Human Data] [Human-Check]
 
 ![Pool size= 3 vs Pool size=21 Plot](student_files/pool_size_comparison_2.png)
 
-**Figure** Comparison of Gabor energy maps using pool sizes 3 and 21 for wood texture with color defect.
+**Figure** Comparison of Gabor energy maps using pool sizes 3 and 21 for wood texture with color defect. [AI-Vision] [Human-Check]
 
 #### Question 2
 
-Used grid texture. Nearest-direction NMS breaks each ring into disconnected fragments, while interpolated NMS keeps each ring as one continuous loop. Nearest-direction NMS can only compare each pixel against neighbors along 4 fixed directions, but a ring has edge pixels pointing in every direction around its circumference. Directions not in the 4 fixed directions get suppressed. Interpolated NMS uses the exact angle via bilinear_sample, allowing it to keep the loop continuous.
+Used grid texture. Nearest-direction NMS breaks each ring into disconnected fragments, while interpolated NMS keeps each ring as one continuous loop. Nearest-direction NMS can only compare each pixel against neighbors along 4 fixed directions, but a ring has edge pixels pointing in every direction around its circumference. Directions not in the 4 fixed directions get suppressed. Interpolated NMS uses the exact angle via bilinear_sample, allowing it to keep the loop continuous. [Human-Data][Human-Check]
 
-![Nearest_direction NMS vs Interpolated NMS plot 1](student_files/nms_comparison_1.png)
+![Nearest_direction NMS vs Interpolated NMS plot 1](student_files/nms_comparison_1.png) [AI-Vision] [Human-Check]
 
 **Figure** Nearest_direction NMS and Interpolated NMS for grid texture.
 
-The histogram compares the distribution of surviving positive NMS values for both methods. Interpolated NMS retains a higher pixel count than nearest-direction NMS across most bins, particularly in the 0.06–0.09 range. This is consistent with the ring-fragmentation effect observed earlier.
+The histogram compares the distribution of surviving positive NMS values for both methods. Interpolated NMS retains a higher pixel count than nearest-direction NMS across most bins, particularly in the 0.06–0.09 range. This is consistent with the ring-fragmentation effect observed earlier. [Human-Data][Human-Check]
 
 ![Nearest_direction NMS vs Interpolated NMS plot 2](student_files/nms_comparison_2.png)
 
-**Figure** Retained positive response distribution for grid texture.
+**Figure** Retained positive response distribution for grid texture. [AI-Vision] [Human-Check]
 
-For the same grid texture image, in 8-connectivity edges, the rings are mostly complete, closed loops. Whereas in 4-connectivity edges, the same rings now have visible gaps. This is especially the case for diagonal portions of the ring.
+For the same grid texture image, in 8-connectivity edges, the rings are mostly complete, closed loops. Whereas in 4-connectivity edges, the same rings now have visible gaps. This is especially the case for diagonal portions of the ring. [Human-Data][Human-Check]
 
 ![8-connectivity vs 4-connectivity plot](student_files/8_4_connectivity_comparison.png)
 
@@ -108,14 +118,14 @@ Carpet and wood were classified perfectly. Leather and tile were nearly perfect 
 
 On the left plot, most correct predictions are made with high confidence, concentrated in the 0.9-1.0 bin. Errors, however, split into two groups. Around half of the errors fall at 0.5-0.6 confidence and the other half occur at 0.9-1.0 confidence, so confidence alone cannot detect every mistake.
 
-On the right plot, good and defective images have similar confidence distributions, with both concentrated at 0.9-1.0, consistent with their similar accuracy (0.938 vs 0.940). The larger defective bars reflect the larger number of defective test images (183 vs 65), not higher confidence. Defects therefore do not appear to reduce the classifier's confidence.
+On the right plot, good and defective images have similar confidence distributions, with both concentrated at 0.9-1.0, consistent with their similar accuracy (0.938 vs 0.940). The larger defective bars reflect the larger number of defective test images (183 vs 65), not higher confidence. Defects therefore do not appear to reduce the classifier's confidence. [Human-Data][Human-Check]
 
 ![Confidence Histogram](student_files/taskA_confidence_histograms.png)
 
 **Figure** Confidence Histogram
 
 The largest bin (mean confidence ~0.95, accuracy~0.95) lies almost on the diagonal, and since it holds most of the test images. The overall calibration is good. The ~0.85 bin lies slightly above
-the diagonal, the classifier is mildly under-confident there. The clear exception is the bin at mean confidence ~0.55, where accuracy was only ~0.15. Predictions in this range are strongly over-confident.
+the diagonal, the classifier is mildly under-confident there. The clear exception is the bin at mean confidence ~0.55, where accuracy was only ~0.15. Predictions in this range are strongly over-confident. [Human-Data][Human-Check]
 
 ![Reliability Diagram](student_files/taskA_reliability_diagram.png)
 
@@ -131,7 +141,7 @@ Below are two examples of misclassification.
 
 #### Question 3
 
-Largest values are the color channels (channels 0-2), where RGB is stored on 0 - 1 scale. Smallest values includes gabor channels (channels 11-14), such as those in the higher frequencies which might be due to the relatively smooth and low-frequency texture of wood and the gradient energy (channel 15), which is computed as a pooled energy. Scaling is required as a linear classifier will penalize cofficient magnitude uniformly across all features. Scaling helps to prevent cases where classifier underuses informative but small scale channels because of their units not their actual predictive value.
+Largest values are the color channels (channels 0-2), where RGB is stored on 0 - 1 scale. Smallest values includes gabor channels (channels 11-14), such as those in the higher frequencies which might be due to the relatively smooth and low-frequency texture of wood and the gradient energy (channel 15), which is computed as a pooled energy. Scaling is required as a linear classifier will penalize cofficient magnitude uniformly across all features. Scaling helps to prevent cases where classifier underuses informative but small scale channels because of their units not their actual predictive value. [Human-Data][Human-Check]
 
 ![Feature Channel Scale Comparison](student_files/feature_channel_scales_comparison.png)
 
@@ -145,7 +155,7 @@ Accuracy for defect images: 0.940
 
 Classifier is not less accurate on images with defects.
 
-The confident error idx=58 is a good grid image predicted as carpet with confidence 1.00. The below image shows its response maps against a correctly classified grid and carpet. Its edge-density map is dense across the whole image, like the carpet, whereas the grid reference has near-zero edge density over its top half. Its max-Gabor map shows strong regular stripes everywhere, and its gradient energy is spread evenly across the image.
+The confident error idx=58 is a good grid image predicted as carpet with confidence 1.00. The below image shows its response maps against a correctly classified grid and carpet. Its edge-density map is dense across the whole image, like the carpet, whereas the grid reference has near-zero edge density over its top half. Its max-Gabor map shows strong regular stripes everywhere, and its gradient energy is spread evenly across the image. [Human-Data] [Human-Check]
 
 ![Example of a high confidence error](student_files/taskA_highconfidence_error.png)
 
@@ -163,9 +173,11 @@ In task B, one normal model is fitted per material on training images only. Pixe
 | Edge only     | 3.0666    | 0.636       | 0.162    | 0.088     |
 | Combined      | 3.4016    | 0.662       | 0.168    | 0.092     |
 
-Gabor gives the best image-level detection (0.694), followed by combined (0.662) and edge (0.636). This might suggest that the edge map adds more noise than new information. In `features.py`, the combined configuration concatenates 3 colour, 4 Gabor and 6 edge channels. In `normality.py`, all channels are scored together using the root-mean-square of the per-channel z-scores. As a result, strong Gabor responses to a defect are averaged with mostly normal edge and colour responses, which reduces the defect contrast and makes it harder to separate defective from normal pixels. Since AUROC shows whether the model can identify defective images from normal ones, it makes sense that Gabor has the highest image AUROC and edge has the lowest.
+[AI-Vision] [AI-Design] [Human-Check]
 
-There is no significant difference in pixel level localisation (pixel F1 and pixel IoU), which is very weak overall. This might be due to the high sigma (sigma = 3) over a 9x9 window. While smoothing may help in image detection (and possibly material defects) by supressing noise, it blurs precise pixel boundaries and hence results in low pixel level localisation. Nonetheless, combined maps performed the best for pixel level localisation.
+Gabor gives the best image-level detection (0.694), followed by combined (0.662) and edge (0.636). This might suggest that the edge map adds more noise than new information. In `features.py`, the combined configuration concatenates 3 colour, 4 Gabor and 6 edge channels. In `normality.py`, all channels are scored together using the root-mean-square of the per-channel z-scores. As a result, strong Gabor responses to a defect are averaged with mostly normal edge and colour responses, which reduces the defect contrast and makes it harder to separate defective from normal pixels. Since AUROC shows whether the model can identify defective images from normal ones, it makes sense that Gabor has the highest image AUROC and edge has the lowest. [Human-Data] [Human-Check]
+
+There is no significant difference in pixel level localisation (pixel F1 and pixel IoU), which is very weak overall. This might be due to the high sigma (sigma = 3) over a 9x9 window. While smoothing may help in image detection (and possibly material defects) by supressing noise, it blurs precise pixel boundaries and hence results in low pixel level localisation. Nonetheless, combined maps performed the best for pixel level localisation. [Human-Data] [Human-Check]
 
 #### IoU and F1 for each defect
 
@@ -193,13 +205,19 @@ Using the combined configuration with a threshold of 3.4016, the IoU and F1 resu
 | oil                 | tile                    | 0.000     | 0.000     |
 | **Overall**         | all                     | **0.168** | **0.092** |
 
+[AI-Vision] [AI-Design] [Human-Check]
+
 Likely connected edges: scratch, crack, cut, fold, thread, broken, bent. Thin edges are likely blurred away by the pooling (Gabor pool 7, edge density 9, score pool 7), and the strong regular pattern on tile and grid hides them.
 
 Likely colour or diffuse texture: color, liquid, oil, glue, glue_strip, gray_stroke, rough, metal_contamination. Liquid and color do well because they are large, high-contrast regions, which suits the smoothed map. Oil, gray_stroke and rough (tile) score lowers as they are low-contrast against an already busy texture.
 
-![alt text](student_files/connected-edges.png)
+![alt text](student_files/connected-edges.png) 
+
+[AI-Design] [Human-Check]
 
 ![alt text](student_files/color-defects.png)
+
+[AI-Design] [Human-Check]
 
 The above two images show the defects with the largest edge ratio and colour shift, which shows the most likely connected edges and most likely colour or diffuse textures respectively.
 
@@ -209,11 +227,14 @@ One failure caused by image borders is that the model performs badly along image
 
 ![alt text](student_files/border-failure.png)
 
+[AI-Design] [Human-Check]
+
 This is shown in the image above, where the defect goes undetected when the borders are removed, since the most significant portion of the crack appears to be in the border.
 
 The aggregation percentile maps pixel scores into one number per image. It takes a predefined percentile of the pixel scores within the scored area. As the percentile increases, the image score is based on fewer, higher-scoring pixels. This is good for image-level detection of smaller defects, but it also gives high scores to bright lighting spots. However, it is lenient on bright lighting spots, which tend to give higher scores.
 
 By raising the mask threshold, fewer pixels pass the threshold, so the mask gets smaller. Pixels where the score >= threshold are marked as defects. This is good for preventing irrelevant detection of minor defects, but it could miss real defects, especially faint ones such as threads and cuts.
+[Human-Data] [Human-Check]
 
 ### Task C
 
@@ -237,29 +258,31 @@ We used 520 training and 520 validation images from DTD split 1 to predict 13 te
 | striped | 0.558 | 0.554 |
 | woven | 0.334 | 0.179 |
 
-The heatmap below shows the average predicted probability for each attribute, for images grouped by their primary label. The diagonal is highest for striped (0.50) and banded (0.35), moderate for grid and woven (0.24) and stained (0.21). Whereas braided, bumpy, fibrous, pitted and porous are much lower. Related regular patterns are confused: banded images receive a grid score of 0.21, and grid images receive striped (0.14) and woven (0.15) scores.
+[AI-Design] [Human-Data] [Human-Check]
+
+The heatmap below shows the average predicted probability for each attribute, for images grouped by their primary label. The diagonal is highest for striped (0.50) and banded (0.35), moderate for grid and woven (0.24) and stained (0.21). Whereas braided, bumpy, fibrous, pitted and porous are much lower. Related regular patterns are confused: banded images receive a grid score of 0.21, and grid images receive striped (0.14) and woven (0.15) scores. [Human-Data] [Human-Check]
 
 ![Probability Heatmap](student_files/taskC_probability_heatmap.png)
 
-**Figure** Probability Heatmap.
+**Figure** Probability Heatmap. [AI-Design] [Human-Check]
 
 **Qualitative examples**
 Selected from the first validation image per primary class.
 
 Example 1: (Success)
-A banded image (labels: banded, striped) received banded p = ~0.80, above all other terms. It consists of thick, sharply separated vertical bands, producing strong, regular edges. However, stained received second highest with p = ~ 0.18.
+A banded image (labels: banded, striped) received banded p = ~0.80, above all other terms. It consists of thick, sharply separated vertical bands, producing strong, regular edges. However, stained received second highest with p = ~ 0.18. [Human-Data] [Human-Check]
 
-![Example 1](student_files/taskC_example1.png)
+![Example 1](student_files/taskC_example1.png) [AI-Design] [Human-Check]
 
 Example 2: (High Scoring Error)
-A striped image (labels: striped) recieved stained p = ~0.50, against striped p = ~0.08. The image contains large smooth colour regions of orange and blue next to fine surface ridges. The model may be reading the large colour regions as a stain-like pattern, while the stripes, which are curved and unevenly spaced, give weaker evidence.
+A striped image (labels: striped) recieved stained p = ~0.50, against striped p = ~0.08. The image contains large smooth colour regions of orange and blue next to fine surface ridges. The model may be reading the large colour regions as a stain-like pattern, while the stripes, which are curved and unevenly spaced, give weaker evidence. [Human-Data] [Human-Check]
 
 ![Example 2](student_files/taskC_example2.png)
 
 Example 3: (With No Clear Evidence)
-A stained image (labels: stained) received braided p = ~0.17 against stained p = 0.15, with every other score having a similar p. Model has no strong evidence for a certain term. Patterns of irregular dark and light patches would more generic features that resemble several terms.
+A stained image (labels: stained) received braided p = ~0.17 against stained p = 0.15, with every other score having a similar p. Model has no strong evidence for a certain term. Patterns of irregular dark and light patches would more generic features that resemble several terms. [Human-Data] [Human-Check]
 
-![Example 3](student_files/taskC_example3.png)
+![Example 3](student_files/taskC_example3.png) [AI-Design] [Human-Check]
 
 **Which attributes map to measurable evidence?**
 
@@ -280,13 +303,15 @@ Table: Average Precision by Feature Family for Each DTD Texture Attribute
 | striped | 0.435 | 0.603 | 0.512 | 0.498 | 0.558 |
 | woven | 0.203 | 0.163 | 0.219 | 0.274 | 0.334 |
 
+[AI-Design] [AI-Vision] [Human-Check]
+
 Edge features perform best for banded (0.577), grid (0.240), and woven (0.274), while Gabor performs best for striped (0.603). This is reasonable because these textures contain clear lines or repeated patterns.
-For some attributes, performance remains low across all feature families. Cracked, blotchy, bumpy, pitted and porous are close to chance, suggesting that our features do not capture their fine or irregular structures well.
+For some attributes, performance remains low across all feature families. Cracked, blotchy, bumpy, pitted and porous are close to chance, suggesting that our features do not capture their fine or irregular structures well. [Human-Data] [Human-Check]
 
 #### Question 6
 
 The descriptor contains colour, Gabor, gradient and edge features, summarised using mean, standard deviation and the 90th percentile. This captures colour variation, texture and edge information, which helps detect clear patterns such as striped (AP 0.558) and banded (AP 0.428) textures.
-However, global pooling removes spatial information, so location of features or how they are arranged are not included. This may explain the poor results for cracked, braided and porous textures. The 64×64 grayscale images and local averaging may remove fine details and shading.
+However, global pooling removes spatial information, so location of features or how they are arranged are not included. This may explain the poor results for cracked, braided and porous textures. The 64×64 grayscale images and local averaging may remove fine details and shading. [Human-Data] [Human-Check]
 
 ## Results and Analysis Task D
 
@@ -294,7 +319,7 @@ However, global pooling removes spatial information, so location of features or 
 
 #### Passport Images
 
-Here are some sample passport images from every material collected (carpet, leather, tile and wood). The rest of the passport photos are found under student files > passports folder.
+Here are some sample passport images from every material collected (carpet, leather, tile and wood). The rest of the passport photos are found under student files > passports folder. [AI-Design] [AI-Vision] [Human-Check]
 
 ![alt text](student_files/passports/passport_carpet_01.png)
 
@@ -310,7 +335,9 @@ From our investigation, we found out that the confidence is unable to accurately
 
 ![alt text](student_files\anamoly-against-confidence.png)
 
-The above diagram plots material confidence against anomaly score (anomaly score = log(image_score)), while identifying correct and incorrect predictions. If confidence were a useful warning signal, the wrong predictions (orange crosses) would cluster at low confidence and the correct ones (blue circles) at high confidence (Hendrycks & Gimpel, 2017). While correct predictions tend to cluster at higher confidence levels (mean: 0.83), incorrect predictions tend to be spread more evenly across the confidence range (0.34–0.99). Moreover, confidence scores have little correlation with identifying a defect (Spearman ρ = −0.15, p = 0.42). For instance, carpet_07 has the highest anomaly score but was misclassified at 0.77 confidence. Hence, confidence alone is not a reliable indicator of the model's accuracy.
+[AI-Design] [AI-Vision] [Human-Check]
+
+The above diagram plots material confidence against anomaly score (anomaly score = log(image_score)), while identifying correct and incorrect predictions. If confidence were a useful warning signal, the wrong predictions (orange crosses) would cluster at low confidence and the correct ones (blue circles) at high confidence (Hendrycks & Gimpel, 2017). While correct predictions tend to cluster at higher confidence levels (mean: 0.83), incorrect predictions tend to be spread more evenly across the confidence range (0.34–0.99). Moreover, confidence scores have little correlation with identifying a defect (Spearman ρ = −0.15, p = 0.42). For instance, carpet_07 has the highest anomaly score but was misclassified at 0.77 confidence. Hence, confidence alone is not a reliable indicator of the model's accuracy. [Human-Data] [Human-Check]
 
 ### Part 2 - VLM defect classification
 
@@ -318,7 +345,7 @@ The above diagram plots material confidence against anomaly score (anomaly score
 
 This task test whether a virtual langauge machine can identify and name surface defects under 3 levels of supplied information. This comes in three levels: D1 generic one shot prompting, D2 named defect zero shot prompting and D3 example conditioned prompting.
 
-The results for all five material under all three levels are documented in the table below:
+The results for all five material under all three levels are documented in the table below [AI-Design] [AI-Vision] [Human-Check]:
 
 | Query ID                                                                         | Condition | Predicted label     | Decision      | Confidence | Visible evidence                                                                                                                                                                                                                                                     | Exact prompt                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Model / version                 | Run date   |
 | -------------------------------------------------------------------------------- | --------- | ------------------- | ------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ---------- |
@@ -342,7 +369,7 @@ The images used for D1 - D3 are as follows:
 
 ![alt text](student_files/taskd_query_images.png)
 
-The validation support images used in D3 to identify the images are shown below as well:
+The validation support images used in D3 to identify the images are shown below as well [Human-Data] [Human-Check]:
 
 ![alt text](student_files/taskd_carpet_validation.png)
 ![alt text](student_files/taskd_grid_validation.png)
@@ -352,7 +379,7 @@ The validation support images used in D3 to identify the images are shown below 
 
 #### Analysis
 
-This score table summarises the test results and accuracy:
+This score table summarises the test results and accuracy [AI-Design] [AI-Vision] [Human-Check]:
 
 | Condition             | Defect detected | Exact label | Lenient label | Mean confidence | Outside vocabulary      |
 | --------------------- | --------------- | ----------- | ------------- | --------------- | ----------------------- |
@@ -364,15 +391,15 @@ Exact labels are labels that match the defined correct label word for word. Leni
 
 Without any label restrictions in D1, it detects all defects yet gives the lowest exact label accuracy. For instance, it detected the carpet abnomaly as stain instead of color and crack over scratch for wood. By giving definitions (D2) and examples (D3), the exact label accuracy increased from 1/5 to 3/5 and 4/5 respectively. However, it gave more false negatives by detecting wood as non defective in both D2 and D3. By adding supporting definitions and examples, it increases exact label accuracy but reduces defect detection recall. This drop in recall is limited as it pertains only to a single material defect (wood).
 
-For D1, 4/5 of the labels violated the allowed vocabulary but no vocabulary violations are found in D2 and D3 where strict prompting and proper labels are in place.
+For D1, 4/5 of the labels violated the allowed vocabulary but no vocabulary violations are found in D2 and D3 where strict prompting and proper labels are in place. [Human-Data] [Human-Check]
 
 #### Confidence Levels Plot
 
-The confidence for correct, incorrect predictions are shown in the diagram below. For D1, lenient labels, labels that accurately identitfy the defect but uses additional vocabulary are identified too:
+The confidence for correct, incorrect predictions are shown in the diagram below. For D1, lenient labels, labels that accurately identitfy the defect but uses additional vocabulary are identified too [AI-Design] [AI-Vision] [Human-Check]:
 
 ![alt text](student_files/taskd_confidence_by_condition.png)
 
-From the above diagram, the confidence levels are exact predictions are higher compared to incorrect predictions. This might be because of the overconfidence of LLMs, where in one study, it was recorded that LLMs overestimate the probability that their answer is correct between 20% and 60% (Sun et. al, 2025). With examples and defintions, LLMs have a source of reference and hence lower its confidence when their initial belief deviates from the facts provided.
+From the above diagram, the confidence levels are exact predictions are higher compared to incorrect predictions. This might be because of the overconfidence of LLMs, where in one study, it was recorded that LLMs overestimate the probability that their answer is correct between 20% and 60% (Sun et. al, 2025). With examples and defintions, LLMs have a source of reference and hence lower its confidence when their initial belief deviates from the facts provided. [Human-Data] [Human-Check]
 
 #### Definitions and Examples in Output Predictions
 
@@ -383,11 +410,11 @@ The model identified the defect as "poke" in D2, where only definitions were pro
 
 There are no queries where the examples help yet the definition didn't, definitions play a critical role in identifying correct abnormalies when one of it is detected. For instance, in the case of carpet, the model initially predicted "stain" in D1, without any prompt guidance, but gave the correct label, "color," after definitions were provided in D2.
 
-Nonetheless, both prompt and examples failed on wood. Without any definitions and examples, it correctly detected an abnormaly but gave the wrong label (crack instead of scratch). When definitions and examples were provided, the model did not detect any anomaly at all. This might be because the scratch is not prominent in the image; it is thin and close in colour to the wood, so it blends in with the surface. Compared with the definitions and examples, which tend to show more prominent defects, the scratch is far less obvious, so the model classified the image as having no defects.
+Nonetheless, both prompt and examples failed on wood. Without any definitions and examples, it correctly detected an abnormaly but gave the wrong label (crack instead of scratch). When definitions and examples were provided, the model did not detect any anomaly at all. This might be because the scratch is not prominent in the image; it is thin and close in colour to the wood, so it blends in with the surface. Compared with the definitions and examples, which tend to show more prominent defects, the scratch is far less obvious, so the model classified the image as having no defects. [Human-Data] [Human-Check]
 
 #### Nondeterminism
 
-The D2 prompt was re-run three times per material (leather, tile and wood) to check for nondeterminism. Each output is performed in a separate chat using Claude Opus 5.5 Medium on 6 October 2026. The results are shown below:
+The D2 prompt was re-run three times per material (leather, tile and wood) to check for nondeterminism. Each output is performed in a separate chat using Claude Opus 5.5 Medium on 6 October 2026. The results are shown below [AI-Design] [AI-Vision] [Human-Check]:
 
 | Query ID                                                                            | Condition | Predicted label | Decision      | Confidence | Visible evidence                                                                                                                                                                                                                              |
 | ----------------------------------------------------------------------------------- | --------- | --------------- | ------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -420,7 +447,9 @@ Form the above table,the predicted label and decision do not change across repea
 | [taskD-D2-wood-change-instruction](https://claude.ai/share/5a9955d4-0e81-4786-b221-4a70c72526f6)    | scratch   | good            | Not Defective | 68         | The surface shows uniform oak grain with natural dark pore streaks and a straight vertical joint between two boards, with no holes, stains, discoloured patches, or abrasion marks.                                            | Here is a description of the above material image:<br>material: wood<br>color: A localized region has an abnormal colour or tone.<br>combined: More than one defect mechanism appears in the same image.<br>hole: Material is missing in a compact hole-like region.<br>liquid: A liquid stain changes colour or reflectance locally.<br>scratch: A thin elongated abrasion crosses the surface.<br>Examine this image of the surface. Do you see any defects? If there is one, provide a single label; if there isn't, answer "good." Include a confidence score between 0 and 100, along with one sentence describing the visible evidence.<br>Return JSON with<br>> `is_defective`, `defect_name`, `confidence`, and `evidence`.              |
 | [taskD-D2-wood-change-order](https://claude.ai/share/86a31e06-13f4-48ef-a668-005cb721747b)          | scratch   | good            | Not Defective | 60         | The vertical line near the center looks like a normal joint between two boards with a slightly pale cut edge, and the dark streaks are ordinary oak grain pores, with no localized discoloration, holes, stains, or abrasions. | Inspect this surface image. Is anything visibly abnormal? Give exactly one label if abnormal or good if none is detected, confidence from 0 to 100, and one sentence of visible evidence.<br>Return JSON with<br>> `is_defective`, `defect_name`, `confidence`, and `evidence`.<br>Here is a description of the above material image:<br>material: wood<br>color: A localized region has an abnormal colour or tone.<br>combined: More than one defect mechanism appears in the same image.<br>hole: Material is missing in a compact hole-like region.<br>liquid: A liquid stain changes colour or reflectance locally.<br>scratch: A thin elongated abrasion crosses the surface.                                                              |
 
-In this section, three changes were made: paraphrasing the description of each label, paraphrasing the instructions, and changing the order of the instructions (question, output, then description). Despite these changes, the predicted output did not change, and its confidence changed only minimally. The overall description of the material also remained consistent. Hence, the model appears robust to prompt sensitivity. All chats used Claude Opus 5.5 (medium) on 6 October 2026.
+[AI-Design] [AI-Vision] [Human-Check]
+
+In this section, three changes were made: paraphrasing the description of each label, paraphrasing the instructions, and changing the order of the instructions (question, output, then description). Despite these changes, the predicted output did not change, and its confidence changed only minimally. The overall description of the material also remained consistent. Hence, the model appears robust to prompt sensitivity. All chats used Claude Opus 5.5 (medium) on 6 October 2026. [Human-Data] [Human-Check]
 
 #### Model Updates
 
@@ -430,8 +459,17 @@ In this section, three changes were made: paraphrasing the description of each l
 | taskD-D2-leather-v2-sonnet | cut       | poke            | Defective | 82         | A small puncture-like opening with a short tear and exposed lighter fibres is visible slightly left of centre (around x≈410, y≈655), with a thin dark scratch trailing up-left from it and the surrounding grain pulled inward, while the rest of the leather texture is uniform. | Claude Sonnet 5.5 Medium | [link](https://claude.ai/share/ddff4324-9cda-4e92-97a5-ef330f4d8a2d) |
 | taskD-D2-leather-v2-haiku  | cut       | poke            | Defective | 72         | A small dark puncture-like indentation is visible in the lower-center area of the leather surface, distinct from the natural quilted texture pattern.                                                                                                                             | Claude Haiku Extended    | [link](https://claude.ai/share/96950c15-d15e-4cde-8e51-32ce10bb0f11) |
 
+[AI-Design] [AI-Vision] [Human-Check]
+
+There is no change in predicted lavel, decision and confidence levels when upgrading the model from Claude Haiku to Opus. Nonetheless, the description of visible evidence gets longer and becomes more precise as the model upgrades over the years. [Human-Data] [Human-Check] 
+
 #### Prior Exposure
 
-Since MVTec AD has been publicly available since 2019, and Claude Opus 5.5 was trained on data up to June 2026, it is likely that the dataset was included in the model's training data. This may explain why, in D1, the generated labels closely resemble those in the MVTec AD dataset, despite no predefined labels being provided.
+Since MVTec AD has been publicly available since 2019, and Claude Opus 5.5 was trained on data up to June 2026, it is likely that the dataset was included in the model's training data. This may explain why, in D1, the generated labels closely resemble those in the MVTec AD dataset, despite no predefined labels being provided. [Human-Data] [Human-Check]
 
 ### References
+
+Hendrycks, Dan & Gimpel, Kevin. (2016). A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks. 10.48550/arXiv.1610.02136. 
+
+Sun, Fengfei & Li, Ningke & Wang, Kailong & Goette, Lorenz. (2025). Large Language Models are overconfident and amplify human bias. 10.48550/arXiv.2505.02151. 
+
